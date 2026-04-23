@@ -1,0 +1,43 @@
+.results-container {
+  margin-top: 3rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.results-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.results-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.list-column {
+  /* To ensure scrolling works properly if list gets long while map stays sticky */
+  display: flex;
+  flex-direction: column;
+}
+
+.map-column {
+  position: sticky;
+  top: 100px; /* Offset for header */
+}
+
+@media (max-width: 992px) {
+  .results-layout {
+    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column-reverse; /* Map on top in mobile */
+  }
+  
+  .map-column {
+    width: 100%;
+    position: relative;
+    top: 0;
+  }
+}
