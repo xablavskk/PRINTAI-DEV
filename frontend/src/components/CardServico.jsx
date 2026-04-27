@@ -6,28 +6,38 @@ const CardServico = ({ resultado }) => {
   return (
     <div className="service-card glass-panel animate-fade-in">
       <div className="service-card-header">
-        <h3 className="service-title">{resultado.nome}</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.2rem' }}>
-          <span className="tech-badge">{resultado.tecnologia}</span>
-          {resultado.modelo && <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Mod: {resultado.modelo}</span>}
+        <div>
+          <h3 className="service-title">{resultado.maker?.nome || resultado.nome}</h3>
+          <p className="service-location" style={{ fontSize: '0.8rem', color: 'var(--accent-color)' }}>
+            São Paulo, SP • 2.5km
+          </p>
+        </div>
+        <div className="maker-avatar">
+           <User size={20} />
         </div>
       </div>
       
       <p className="service-description">{resultado.descricao}</p>
       
-      <div className="service-details">
-        <div className="detail-item">
-          <Package size={16} className="detail-icon" />
-          <span>Material: <strong>{resultado.material}</strong></span>
+      <div className="capabilities-group">
+        <div className="capability-tag">
+          <Wrench size={14} />
+          <span>{resultado.tecnologia}</span>
         </div>
-        <div className="detail-item">
-          <User size={16} className="detail-icon" />
-          <span>Maker: <strong>{resultado.maker?.nome}</strong></span>
+        <div className="capability-tag">
+          <Package size={14} />
+          <span>{resultado.material}</span>
         </div>
+        {resultado.modelo && (
+          <div className="capability-tag">
+            <Printer size={14} />
+            <span>{resultado.modelo}</span>
+          </div>
+        )}
       </div>
       
       <div className="service-actions">
-        <button className="btn btn-primary w-full">Ver Detalhes</button>
+        <button className="btn btn-primary w-full">Ver Perfil e Orçamento</button>
       </div>
     </div>
   );
