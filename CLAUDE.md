@@ -184,5 +184,5 @@ Foi finalizado o setup inicial (scaffold) e o **UC Buscar Impressoras 3D (com ma
 - Design Premium (Glassmorphism e Vanilla CSS) com ícones do `lucide-react`.
 - **Busca Simplificada:** O usuário dita o que quer ("peça pequena", "decorativo") e o sistema mapeia isso para ids/tipos usando fallback ou chamada à API.
 - **Integração de Mapa (Leaflet):** Layout de Dashboard dividindo a tela. Lista de serviços na esquerda, Mapa geolocalizado interativo na direita (`react-leaflet`). Ao clicar nos marcadores, abre um popup estilizado com as informações da máquina e botão de "Ver Detalhes" do Maker.
-- **Fallback de Interface:** Caso a API (`http://localhost:8080`) esteja offline na máquina do dev, o componente `SearchServices.jsx` intercepta a falha e utiliza um Mock que **simula a filtragem perfeitamente**. O layout front-end pode ser trabalhado de forma totalmente independente.
+- **Fallback de Interface:** Caso a API (`http://localhost:8080`) esteja offline na máquina do dev, o componente `BuscaServicos.jsx` intercepta a falha e utiliza um Mock que **simula a filtragem perfeitamente**. O layout front-end pode ser trabalhado de forma totalmente independente.
 - Como rodar: `npm install` e `npm run dev` (porta 5173).
