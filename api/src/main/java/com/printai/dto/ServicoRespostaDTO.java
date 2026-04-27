@@ -5,15 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceResponseDTO {
+public class ServicoRespostaDTO {
     private Long id;
-    private String name;
-    private String description;
-    private String technology;
+    private String nome;
+    private String descricao;
+    private String tecnologia;
     private String material;
-    private UserResponseDTO maker;
+    private double precoBase;
+    private UsuarioRespostaDTO maker;
 }

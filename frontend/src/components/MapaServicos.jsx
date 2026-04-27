@@ -14,14 +14,12 @@ const createCustomIcon = () => {
   });
 };
 
-const ServiceMap = ({ services }) => {
-  // Center of SP by default
+const MapaServicos = ({ resultados = [] }) => {
   const defaultCenter = [-23.550520, -46.633308];
-  
-  // Find center based on first valid service, or use default
-  const validServices = services.filter(s => s.maker?.latitude && s.maker?.longitude);
-  const center = validServices.length > 0 
-    ? [validServices[0].maker.latitude, validServices[0].maker.longitude] 
+
+  const resultadosValidos = resultados.filter(r => r.maker?.latitude && r.maker?.longitude);
+  const center = resultadosValidos.length > 0
+    ? [resultadosValidos[0].maker.latitude, resultadosValidos[0].maker.longitude]
     : defaultCenter;
 
   const customMarkerIcon = createCustomIcon();
@@ -33,27 +31,28 @@ const ServiceMap = ({ services }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
-        
-        {validServices.map(service => (
-          <Marker 
-            key={service.id} 
-            position={[service.maker.latitude, service.maker.longitude]}
+
+        {resultadosValidos.map(resultado => (
+          <Marker
+            key={resultado.id}
+            position={[resultado.maker.latitude, resultado.maker.longitude]}
             icon={customMarkerIcon}
           >
             <Popup className="premium-popup">
               <div className="popup-content">
-                <h3>{service.name}</h3>
-                <span className="popup-tech">{service.technology} - {service.material}</span>
-                <p>{service.description}</p>
+                <h3>{resultado.nome}</h3>
+                <span className="popup-tech">{resultado.tecnologia} - {resultado.material}</span>
+                {resultado.modelo && <div style={{ fontSize: '0.8rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>Modelo: {resultado.modelo}</div>}
+                <p>{resultado.descricao}</p>
                 <div className="popup-contact">
                   <Phone size={14} />
-                  <span>{service.maker?.phone || 'Não informado'}</span>
+                  <span>{resultado.maker?.telefone || 'Não informado'}</span>
                 </div>
                 <div className="popup-maker">
                   <ShieldCheck size={14} color="var(--accent-color)" />
-                  <span>Maker: <strong>{service.maker?.name}</strong></span>
+                  <span>Maker: <strong>{resultado.maker?.nome}</strong></span>
                 </div>
-                <button className="btn btn-primary" style={{width: '100%', marginTop: '10px', padding: '0.4rem'}}>Ver Perfil Completo</button>
+                <button className="btn btn-primary" style={{ width: '100%', marginTop: '10px', padding: '0.4rem' }}>Ver Perfil</button>
               </div>
             </Popup>
           </Marker>
@@ -63,4 +62,4 @@ const ServiceMap = ({ services }) => {
   );
 };
 
-export default ServiceMap;
+export default MapaServicos;

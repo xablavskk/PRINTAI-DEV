@@ -162,9 +162,9 @@ src/
 1. **Sempre seguir o padrão MVC** — não misturar responsabilidades entre camadas
 2. **DTOs obrigatórios** — nunca expor entidades JPA diretamente nas respostas da API
 3. **Validações** na camada de `service`, anotações `@Valid` no `controller`
-4. **Nomes em inglês** para classes, métodos e variáveis; **português** apenas em comentários e mensagens de erro ao usuário
+4. **Nomes em português** para classes, métodos, variáveis, tabelas e endpoints.
 5. **Três perfis de usuário** bem separados: `CLIENTE`, `MAKER`, `ADMIN`
-6. Ao criar endpoints, seguir REST semântico: `GET /makers`, `POST /pedidos`, etc.
+6. Ao criar endpoints, seguir REST semântico: `GET /api/servicos`, `POST /api/pedidos`, etc.
 7. Não implementar lógica de pagamento — fora do escopo
 
 ---
@@ -175,10 +175,10 @@ src/
 Foi finalizado o setup inicial (scaffold) e o **UC Buscar Impressoras 3D (com mapa)**.
 
 ### Backend (`api/`)
-- Entidades `User` e `PrintService` criadas com suporte a Geolocalização (`latitude`, `longitude`) e `phone`.
-- Repositórios e Serviços mapeando as buscas (Simplificada via flags booleanas e Avançada via parâmetros técnicos).
+- Entidades `Usuario` (e subclasses `Cliente`, `Maker`, `Administrador`) e `ServicoImpressao` criadas com suporte a Geolocalização (`latitude`, `longitude`) e `telefone`.
+- Repositórios e Serviços mapeando as buscas (Simplificada via `buscaSimplificada` e Avançada via parâmetros técnicos).
 - **Banco H2 + Data Initializer**: A API sobe populada com dados mockados (Makers no centro de SP) para facilitar testes de frontend. Para migrar para a stack oficial, basta alterar `application.properties` para MySQL 8.4 e deletar o Initializer.
-- Como rodar: `.\mvnw spring-boot:run` (porta 8080).
+- Como rodar: `./mvnw spring-boot:run` (porta 8080).
 
 ### Frontend (`frontend/`)
 - Design Premium (Glassmorphism e Vanilla CSS) com ícones do `lucide-react`.

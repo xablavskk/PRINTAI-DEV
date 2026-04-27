@@ -7,7 +7,6 @@
   padding: 4px;
 }
 
-/* Custom Marker */
 .custom-marker {
   display: flex;
   justify-content: center;
@@ -37,11 +36,17 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(0.5); opacity: 0.8; }
-  100% { transform: scale(2); opacity: 0; }
+  0% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 
-/* Premium Popup Styling override */
 .leaflet-popup-content-wrapper {
   background: var(--bg-card) !important;
   color: var(--text-primary) !important;
@@ -87,7 +92,8 @@
   max-width: 200px;
 }
 
-.popup-contact, .popup-maker {
+.popup-contact,
+.popup-maker {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -96,6 +102,7 @@
   color: var(--text-secondary);
 }
 
-.popup-contact span, .popup-maker span {
+.popup-contact span,
+.popup-maker span {
   color: var(--text-primary);
 }

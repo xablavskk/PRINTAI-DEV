@@ -5,15 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponseDTO {
+public class UsuarioRespostaDTO {
     private Long id;
-    private String name;
-    private String role;
+    private String nome;
+    private String tipo; // CLIENTE, MAKER, ADMIN
     private Double latitude;
     private Double longitude;
-    private String phone;
+    private String telefone;
 }

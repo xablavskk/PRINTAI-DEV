@@ -5,7 +5,12 @@ const api = axios.create({
 });
 
 export const searchServices = async (params) => {
-  const response = await api.get('/services/search', { params });
+  const response = await api.get('/busca/servicos', { params });
+  return response.data;
+};
+
+export const searchPrinters = async (params) => {
+  const response = await api.get('/busca/impressoras', { params });
   return response.data;
 };
 

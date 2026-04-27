@@ -90,7 +90,6 @@
   transform: translateY(-1px);
 }
 
-/* Advanced Form */
 .advanced-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -135,13 +134,19 @@
   justify-content: center;
 }
 
-.gap-2 { gap: 0.5rem; }
-.mt-4 { margin-top: 1rem; }
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
 
 @media (max-width: 768px) {
   .advanced-form {
     grid-template-columns: 1fr;
   }
+
   .search-input-group {
     flex-direction: column;
   }

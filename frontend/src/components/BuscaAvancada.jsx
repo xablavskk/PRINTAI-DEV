@@ -2,20 +2,21 @@ import React, { useState } from 'react';
 import { Settings2 } from 'lucide-react';
 import './SearchForms.css';
 
-const AdvancedSearch = ({ onSearch }) => {
-  const [filters, setFilters] = useState({
-    technology: '',
-    material: ''
+const BuscaAvancada = ({ onSearch }) => {
+  const [filtros, setFiltros] = useState({
+    tecnologia: '',
+    material: '',
+    modelo: ''
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFiltros(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    onSearch(filters);
+    onSearch(filtros);
   };
 
   return (
@@ -26,7 +27,7 @@ const AdvancedSearch = ({ onSearch }) => {
       <form onSubmit={handleSearch} className="advanced-form">
         <div className="form-group">
           <label>Tecnologia</label>
-          <select name="technology" value={filters.technology} onChange={handleChange} className="search-select">
+          <select name="tecnologia" value={filtros.tecnologia} onChange={handleChange} className="search-select">
             <option value="">Qualquer Tecnologia</option>
             <option value="FDM">FDM (Filamento)</option>
             <option value="SLA">SLA (Resina)</option>
@@ -36,13 +37,26 @@ const AdvancedSearch = ({ onSearch }) => {
 
         <div className="form-group">
           <label>Material</label>
-          <select name="material" value={filters.material} onChange={handleChange} className="search-select">
+          <select name="material" value={filtros.material} onChange={handleChange} className="search-select">
             <option value="">Qualquer Material</option>
             <option value="PLA">PLA</option>
             <option value="ABS">ABS</option>
             <option value="PETG">PETG</option>
-            <option value="Resin">Resina</option>
+            <option value="Resina">Resina</option>
           </select>
+        </div>
+
+        <div className="form-group">
+          <label>Modelo da Impressora</label>
+          <input 
+            type="text" 
+            name="modelo" 
+            value={filtros.modelo} 
+            onChange={handleChange} 
+            placeholder="Ex: Ender 3..." 
+            className="search-input"
+            style={{ marginTop: '0.5rem' }}
+          />
         </div>
 
         <button type="submit" className="btn btn-primary flex-center gap-2 mt-4">
@@ -54,4 +68,4 @@ const AdvancedSearch = ({ onSearch }) => {
   );
 };
 
-export default AdvancedSearch;
+export default BuscaAvancada;
