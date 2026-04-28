@@ -22,8 +22,11 @@ public class ServicoImpressao {
     @Column(name = "preco_base")
     private double precoBase;
 
-    @Column(length = 500)
+    @Column(length = 1000)
     private String descricao;
+
+    @Column(name = "condicoes_servico", length = 500)
+    private String condicoesServico; // Ex: Prazo de 3 dias, entrega via correios.
 
     @Column
     private String tecnologia; // FDM, SLA, etc.

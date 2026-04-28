@@ -20,13 +20,16 @@ public class Impressora3D {
     private String modelo;
 
     @Column
+    private String tecnologia;
+
+    @Column(name = "volume_impressao")
+    private String volumeImpressao; // Ex: 220x220x250mm
+
+    @Column
     private String material;
 
     @Column(length = 500)
     private String descricao;
-
-    @Column
-    private String tecnologia; // FDM, SLA, etc.
 
     @Column
     private boolean disponibilidade;
