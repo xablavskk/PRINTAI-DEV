@@ -6,7 +6,8 @@ const BuscaAvancada = ({ onSearch }) => {
   const [filtros, setFiltros] = useState({
     tecnologia: '',
     material: '',
-    modelo: ''
+    modelo: '',
+    volumeMaximo: ''
   });
 
   const handleChange = (e) => {
@@ -16,7 +17,13 @@ const BuscaAvancada = ({ onSearch }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    onSearch(filtros);
+    const params = { ...filtros };
+    if (params.volumeMaximo !== '') {
+      params.volumeMaximo = Number(params.volumeMaximo);
+    } else {
+      delete params.volumeMaximo;
+    }
+    onSearch(params);
   };
 
   return (
@@ -54,6 +61,20 @@ const BuscaAvancada = ({ onSearch }) => {
             value={filtros.modelo} 
             onChange={handleChange} 
             placeholder="Ex: Ender 3..." 
+            className="search-input"
+            style={{ marginTop: '0.5rem' }}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Volume Máximo (cm³)</label>
+          <input 
+            type="number" 
+            name="volumeMaximo" 
+            value={filtros.volumeMaximo} 
+            onChange={handleChange} 
+            placeholder="Ex: 20" 
+            min="1"
             className="search-input"
             style={{ marginTop: '0.5rem' }}
           />

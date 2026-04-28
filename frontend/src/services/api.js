@@ -14,4 +14,9 @@ export const searchPrinters = async (params) => {
   return response.data;
 };
 
+export const getServiceDetails = async (id) => {
+  const response = await api.get(`/busca/servicos/${id}`);
+  return response.data;
+};
+
 export default api;

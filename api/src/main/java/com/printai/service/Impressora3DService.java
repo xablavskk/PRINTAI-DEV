@@ -54,9 +54,30 @@ public class Impressora3DService {
                     .collect(Collectors.toList());
         }
 
+        if (buscaDTO.getVolumeMaximo() != null) {
+            impressoras = impressoras.stream()
+                    .filter(i -> calcularVolumeCm3(i.getVolumeImpressao()) <= buscaDTO.getVolumeMaximo())
+                    .collect(Collectors.toList());
+        }
+
         return impressoras.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    private double calcularVolumeCm3(String volumeImpressao) {
+        if (volumeImpressao == null || volumeImpressao.isBlank()) return Double.MAX_VALUE;
+        try {
+            String limpo = volumeImpressao.toLowerCase().replace("mm", "").trim();
+            String[] partes = limpo.split("x");
+            if (partes.length != 3) return Double.MAX_VALUE;
+            double x = Double.parseDouble(partes[0].trim());
+            double y = Double.parseDouble(partes[1].trim());
+            double z = Double.parseDouble(partes[2].trim());
+            return (x * y * z) / 1000.0;
+        } catch (NumberFormatException e) {
+            return Double.MAX_VALUE;
+        }
     }
 
     private double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {

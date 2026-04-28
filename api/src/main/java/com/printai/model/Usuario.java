@@ -27,7 +27,6 @@ public abstract class Usuario {
     @Column(nullable = false)
     private String senha;
 
-    // Campos adicionais necessários para o funcionamento atual do sistema
     @Column
     private Double latitude;
 

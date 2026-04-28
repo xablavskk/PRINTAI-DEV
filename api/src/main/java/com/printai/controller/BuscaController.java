@@ -25,6 +25,12 @@ public class BuscaController {
         return ResponseEntity.ok(resultados);
     }
 
+    @GetMapping("/detalhe/{id}")
+    public ResponseEntity<ServicoRespostaDTO> buscarDetalhes(@PathVariable Long id) {
+        ServicoRespostaDTO detalhes = servicoImpressaoService.buscarPorId(id);
+        return ResponseEntity.ok(detalhes);
+    }
+
     @GetMapping("/impressoras")
     public ResponseEntity<List<ImpressoraRespostaDTO>> buscarImpressoras(
             BuscaServicoRequestDTO buscaDTO,
