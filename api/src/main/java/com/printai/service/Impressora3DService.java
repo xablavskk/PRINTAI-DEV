@@ -68,14 +68,12 @@ public class Impressora3DService {
     private double calcularVolumeCm3(String volumeImpressao) {
         if (volumeImpressao == null || volumeImpressao.isBlank()) return Double.MAX_VALUE;
         try {
-            // Suporta formatos: 220x220x250mm ou 220x220x250
             String limpo = volumeImpressao.toLowerCase().replace("mm", "").trim();
             String[] partes = limpo.split("x");
             if (partes.length != 3) return Double.MAX_VALUE;
             double x = Double.parseDouble(partes[0].trim());
             double y = Double.parseDouble(partes[1].trim());
             double z = Double.parseDouble(partes[2].trim());
-            // Converte mm³ para cm³
             return (x * y * z) / 1000.0;
         } catch (NumberFormatException e) {
             return Double.MAX_VALUE;

@@ -27,7 +27,6 @@ public class BuscaController {
 
     @GetMapping("/detalhe/{id}")
     public ResponseEntity<ServicoRespostaDTO> buscarDetalhes(@PathVariable Long id) {
-        System.out.println(">>> REQUISIÇÃO CHEGOU NO JAVA PARA ID: " + id);
         ServicoRespostaDTO detalhes = servicoImpressaoService.buscarPorId(id);
         return ResponseEntity.ok(detalhes);
     }
