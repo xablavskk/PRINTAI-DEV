@@ -1,9 +1,12 @@
 package com.printai.service;
 
+import com.printai.dto.AvaliacaoDTO;
 import com.printai.dto.BuscaServicoRequestDTO;
 import com.printai.dto.ServicoRespostaDTO;
 import com.printai.dto.UsuarioRespostaDTO;
+import com.printai.model.Avaliacao;
 import com.printai.model.ServicoImpressao;
+import com.printai.repository.AvaliacaoRepository;
 import com.printai.repository.ServicoImpressaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,34 @@ import java.util.stream.Collectors;
 public class ServicoImpressaoService {
 
     private final ServicoImpressaoRepository repository;
+    private final AvaliacaoRepository avaliacaoRepository;
+
+    public ServicoRespostaDTO buscarPorId(Long id) {
+        ServicoImpressao servico = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
+        
+        ServicoRespostaDTO dto = converterParaDTO(servico);
+        
+        if (servico.getMaker() != null) {
+            Long makerId = servico.getMaker().getId();
+            List<Avaliacao> avaliacoes = avaliacaoRepository.findByMaker_Id(makerId);
+            
+            System.out.println(">>> Maker ID: " + makerId + " | Avaliações encontradas: " + avaliacoes.size());
+            
+            dto.setAvaliacoes(avaliacoes.stream().map(a -> AvaliacaoDTO.builder()
+                    .id(a.getId())
+                    .clienteNome(a.getCliente().getNome())
+                    .nota(a.getNota())
+                    .comentario(a.getComentario())
+                    .build()).collect(Collectors.toList()));
+            
+            double media = avaliacoes.stream().mapToInt(Avaliacao::getNota).average().orElse(0.0);
+            dto.setMediaAvaliacao(media);
+            dto.setTotalAvaliacoes(avaliacoes.size());
+        }
+        
+        return dto;
+    }
 
     public List<ServicoRespostaDTO> buscarServicos(BuscaServicoRequestDTO buscaDTO) {
         List<ServicoImpressao> servicos;
@@ -50,10 +81,17 @@ public class ServicoImpressaoService {
                     .build();
         }
 
+        String volumeMaximo = "Não informado";
+        if (entidade.getMaker() != null && entidade.getMaker().getImpressoras() != null && !entidade.getMaker().getImpressoras().isEmpty()) {
+            volumeMaximo = entidade.getMaker().getImpressoras().get(0).getVolumeImpressao();
+        }
+
         return ServicoRespostaDTO.builder()
                 .id(entidade.getId())
                 .nome(entidade.getNome())
                 .descricao(entidade.getDescricao())
+                .condicoesServico(entidade.getCondicoesServico())
+                .volumeImpressao(volumeMaximo)
                 .tecnologia(entidade.getTecnologia())
                 .material(entidade.getMaterial())
                 .precoBase(entidade.getPrecoBase())
