@@ -12,7 +12,7 @@ export const buscaService = {
   },
 
   async obterDetalhes(id) {
-    const { data } = await apiClient.get(`/detalhe/${id}`);
+    const { data } = await apiClient.get(`/busca/detalhe/${id}`);
     return data;
   }
 };
