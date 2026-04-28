@@ -10,4 +10,5 @@ public class BuscaServicoRequestDTO {
     private String modelo;
 
     private String buscaSimplificada;
+    private Double volumeMaximo;
 }

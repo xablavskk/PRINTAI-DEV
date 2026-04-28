@@ -10,7 +10,10 @@ export const useBusca = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await buscaService.listarServicos(params);
+      const temFiltroImpressora = params.tecnologia || params.material || params.modelo || params.volumeMaximo;
+      const data = temFiltroImpressora
+        ? await buscaService.listarImpressoras(params)
+        : await buscaService.listarServicos(params);
       setResultados(data);
       return data;
     } catch (err) {
