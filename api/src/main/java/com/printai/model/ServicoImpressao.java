@@ -5,7 +5,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "servicos_impressao")
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,13 +25,17 @@ public class ServicoImpressao {
     private String descricao;
 
     @Column(name = "condicoes_servico", length = 500)
-    private String condicoesServico; // Ex: Prazo de 3 dias, entrega via correios.
+    private String condicoesServico;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tipo_id")
+    private Tipo tipo;
 
     @Column
-    private String tecnologia; // FDM, SLA, etc.
+    private String tecnologia;
 
     @Column
-    private String material; // PLA, ABS, Resina, etc.
+    private String material;
 
     @Column(name = "suporta_pecas_pequenas")
     private boolean suportaPecasPequenas;
@@ -45,9 +48,5 @@ public class ServicoImpressao {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maker_id", nullable = false)
-    private Maker maker;
-
-    public void atualizarPreco(double novoPreco) {
-        this.precoBase = novoPreco;
-    }
+    private Usuario maker;
 }
