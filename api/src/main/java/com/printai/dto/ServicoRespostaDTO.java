@@ -1,10 +1,9 @@
 package com.printai.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.printai.model.TecnologiaTipo;
+import lombok.*;
 
+import java.util.List;
 
 @Data
 @Builder
@@ -14,15 +13,15 @@ public class ServicoRespostaDTO {
     private Long id;
     private String nome;
     private String descricao;
-    private String tecnologia;
+    private String tipoNome;
+    private String tipoDescricao;
+    private List<TecnologiaTipo> tecnologias;
     private String material;
     private double precoBase;
     private String condicoesServico;
     private String volumeImpressao;
     private UsuarioRespostaDTO maker;
-    
-    // Detalhes estendidos para o modal
-    private java.util.List<AvaliacaoDTO> avaliacoes;
+    private List<AvaliacaoDTO> avaliacoes;
     private Double mediaAvaliacao;
     private Integer totalAvaliacoes;
 }

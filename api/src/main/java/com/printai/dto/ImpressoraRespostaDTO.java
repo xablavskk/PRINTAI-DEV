@@ -1,10 +1,9 @@
 package com.printai.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.printai.model.TecnologiaTipo;
+import lombok.*;
 
+import java.util.List;
 
 @Data
 @Builder
@@ -14,7 +13,9 @@ public class ImpressoraRespostaDTO {
     private Long id;
     private String modelo;
     private String material;
-    private String tecnologia;
+    private String tipoNome;
+    private String tipoDescricao;
+    private List<TecnologiaTipo> tecnologias;
     private String descricao;
     private boolean disponibilidade;
     private UsuarioRespostaDTO maker;

@@ -88,7 +88,12 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
                   </div>
                   <div className="tech-item">
                     <span>Tecnologia:</span>
-                    <strong>{info.tecnologia}</strong>
+                    <strong>
+                      {info.tecnologias?.length > 0
+                        ? info.tecnologias.join(', ')
+                        : info.tecnologia || 'Não informado'}
+                      {info.tipoDescricao ? ` — ${info.tipoDescricao}` : ''}
+                    </strong>
                   </div>
                   <div className="tech-item">
                     <span>Materiais Suportados:</span>
