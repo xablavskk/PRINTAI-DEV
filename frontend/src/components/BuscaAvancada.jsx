@@ -39,6 +39,9 @@ const BuscaAvancada = ({ onSearch }) => {
             <option value="FDM">FDM (Filamento)</option>
             <option value="SLA">SLA (Resina)</option>
             <option value="SLS">SLS (Pó)</option>
+            <option value="DLP">DLP (Resina Digital)</option>
+            <option value="MJF">MJF (Multi Jet Fusion)</option>
+            <option value="BINDER_JETTING">Binder Jetting</option>
           </select>
         </div>
 

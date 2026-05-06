@@ -6,7 +6,6 @@ import java.util.Date;
 
 @Entity
 @Table(name = "pedidos")
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,13 +31,9 @@ public class Pedido {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente;
+    private Usuario cliente;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "impressora_id", nullable = false)
     private Impressora3D impressora;
-
-    public void atualizarStatus(String novoStatus) {
-        this.status = novoStatus;
-    }
 }

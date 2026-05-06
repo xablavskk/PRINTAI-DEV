@@ -1,5 +1,6 @@
 services:
   backend:
+    container_name: printai-api
     build:
       context: ./api
       dockerfile: Dockerfile
@@ -9,3 +10,15 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     volumes:
       - ./.m2:/root/.m2
+
+  frontend:
+    container_name: printai-web
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8080/api

@@ -2,17 +2,16 @@ package com.printai.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+
 import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
-@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public abstract class Usuario {
+@Builder
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,12 +35,43 @@ public abstract class Usuario {
     @Column
     private String telefone;
 
-    public void realizarCadastro() {
-        System.out.println("Iniciando processo de cadastro para o usuário: " + this.nome);
-    }
+    @Column
+    private String cidade;
 
-    public boolean realizarLogin() {
-        System.out.println("Realizando login para o usuário: " + this.email);
-        return true;
-    }
+    @Column
+    private String estado;
+
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "cidade", column = @Column(name = "endereco_cidade")),
+        @AttributeOverride(name = "estado", column = @Column(name = "endereco_estado")),
+        @AttributeOverride(name = "cep",    column = @Column(name = "endereco_cep", length = 9)),
+        @AttributeOverride(name = "pais",   column = @Column(name = "endereco_pais", length = 50))
+    })
+    private Endereco endereco;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Perfil perfil;
+
+    @Column(name = "status_aprovacao")
+    private Boolean statusAprovacao;
+
+    @Column(name = "documento_cpf_cnpj")
+    private String documentoCpfCnpj;
+
+    @OneToMany(mappedBy = "maker", cascade = CascadeType.ALL)
+    private List<ServicoImpressao> servicos;
+
+    @OneToMany(mappedBy = "maker", cascade = CascadeType.ALL)
+    private List<Impressora3D> impressoras;
+
+    @OneToMany(mappedBy = "maker", cascade = CascadeType.ALL)
+    private List<AvaliacaoMaker> avaliacoesRecebidas;
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<Pedido> pedidos;
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<AvaliacaoMaker> avaliacoesFeitas;
 }

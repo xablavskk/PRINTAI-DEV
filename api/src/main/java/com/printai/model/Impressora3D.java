@@ -5,7 +5,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "impressoras_3d")
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,14 +18,19 @@ public class Impressora3D {
     @Column
     private String modelo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tipo_id", nullable = false)
+    private Tipo tipo;
+
     @Column
     private String tecnologia;
 
     @Column(name = "volume_impressao")
-    private String volumeImpressao; // Ex: 220x220x250mm
+    private String volumeImpressao;
 
-    @Column
-    private String material;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "material_id")
+    private Material material;
 
     @Column(length = 500)
     private String descricao;
@@ -36,10 +40,5 @@ public class Impressora3D {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maker_id", nullable = false)
-    private Maker maker;
-
-    public boolean verificarDisponibilidade() {
-        // Lógica para verificar se a impressora está disponível
-        return this.disponibilidade;
-    }
+    private Usuario maker;
 }

@@ -6,12 +6,11 @@ import java.util.Date;
 
 @Entity
 @Table(name = "avaliacoes")
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Avaliacao {
+public class AvaliacaoMaker {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,13 +28,9 @@ public class Avaliacao {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente;
+    private Usuario cliente;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maker_id", nullable = false)
-    private Maker maker;
-
-    public void operation0() {
-        System.out.println("Executando operação genérica de avaliação.");
-    }
+    private Usuario maker;
 }
