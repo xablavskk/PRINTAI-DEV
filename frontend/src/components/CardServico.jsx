@@ -28,7 +28,7 @@ const CardServico = ({ resultado }) => {
         <div className="capabilities-group">
           <div className="capability-tag">
             <Wrench size={14} />
-            <span>{resultado.tecnologia}</span>
+            <span>{resultado.tecnologias?.length > 0 ? resultado.tecnologias.join(', ') : resultado.tipoNome || 'N/A'}</span>
           </div>
           <div className="capability-tag">
             <Package size={14} />

@@ -5,35 +5,32 @@ import lombok.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "pedidos")
+@Table(name = "avaliacoes")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Pedido {
+public class AvaliacaoMaker {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "data_pedido")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dataPedido;
-
     @Column
-    private String status;
+    private int nota;
 
-    @Column(name = "arquivo_3d")
-    private String arquivo3D;
+    @Column(length = 1000)
+    private String comentario;
 
-    @Column(name = "valor_total")
-    private double valorTotal;
+    @Column(name = "data_avaliacao")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dataAvaliacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
     private Usuario cliente;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "impressora_id", nullable = false)
-    private Impressora3D impressora;
+    @JoinColumn(name = "maker_id", nullable = false)
+    private Usuario maker;
 }

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\júnior\\\\Documents\\\\PRINTAI IF\\\\PRINTAI-DEV-945c48f01cb5cf9c4733993b49698ff7099f1446\" -Recurse | Select-Object FullName | ForEach-Object { $_.FullName.Substring\\($_.FullName.LastIndexOf\\('\\\\'\\) + 1\\) })",
+      "Bash(curl -s \"http://localhost:8080/api/busca/servicos\")",
+      "Bash(curl -s \"http://localhost:8080/api/busca/servicos\")"
+    ]
+  }
+}

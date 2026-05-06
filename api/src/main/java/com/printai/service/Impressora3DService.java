@@ -4,10 +4,13 @@ import com.printai.dto.BuscaServicoRequestDTO;
 import com.printai.dto.ImpressoraRespostaDTO;
 import com.printai.dto.UsuarioRespostaDTO;
 import com.printai.model.Impressora3D;
+import com.printai.model.Tecnologia;
+import com.printai.model.TecnologiaTipo;
 import com.printai.repository.Impressora3DRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,11 +26,8 @@ public class Impressora3DService {
         if (lat != null && lon != null && raioKm != null) {
             double deltaLat = raioKm / 111.0;
             double deltaLon = raioKm / (111.0 * Math.cos(Math.toRadians(lat)));
-
-            double latMin = lat - deltaLat;
-            double latMax = lat + deltaLat;
-            double lonMin = lon - deltaLon;
-            double lonMax = lon + deltaLon;
+            double latMin = lat - deltaLat, latMax = lat + deltaLat;
+            double lonMin = lon - deltaLon, lonMax = lon + deltaLon;
 
             impressoras = impressoras.stream()
                     .filter(i -> i.getMaker().getLatitude() >= latMin && i.getMaker().getLatitude() <= latMax)
@@ -42,15 +42,18 @@ public class Impressora3DService {
                     .collect(Collectors.toList());
         }
 
-        if (buscaDTO.getTecnologia() != null && !buscaDTO.getTecnologia().isBlank()) {
+        if (buscaDTO.getTecnologia() != null) {
+            TecnologiaTipo filtro = buscaDTO.getTecnologia();
             impressoras = impressoras.stream()
-                    .filter(i -> i.getTecnologia().equalsIgnoreCase(buscaDTO.getTecnologia()))
+                    .filter(i -> i.getTipo() != null && i.getTipo().getTecnologias() != null &&
+                            i.getTipo().getTecnologias().stream().anyMatch(t -> t.getNome() == filtro))
                     .collect(Collectors.toList());
         }
 
         if (buscaDTO.getMaterial() != null && !buscaDTO.getMaterial().isBlank()) {
             impressoras = impressoras.stream()
-                    .filter(i -> i.getMaterial().toLowerCase().contains(buscaDTO.getMaterial().toLowerCase()))
+                    .filter(i -> i.getMaterial() != null &&
+                            i.getMaterial().getNome().name().equalsIgnoreCase(buscaDTO.getMaterial()))
                     .collect(Collectors.toList());
         }
 
@@ -60,9 +63,7 @@ public class Impressora3DService {
                     .collect(Collectors.toList());
         }
 
-        return impressoras.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        return impressoras.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     private double calcularVolumeCm3(String volumeImpressao) {
@@ -71,10 +72,9 @@ public class Impressora3DService {
             String limpo = volumeImpressao.toLowerCase().replace("mm", "").trim();
             String[] partes = limpo.split("x");
             if (partes.length != 3) return Double.MAX_VALUE;
-            double x = Double.parseDouble(partes[0].trim());
-            double y = Double.parseDouble(partes[1].trim());
-            double z = Double.parseDouble(partes[2].trim());
-            return (x * y * z) / 1000.0;
+            return (Double.parseDouble(partes[0].trim()) *
+                    Double.parseDouble(partes[1].trim()) *
+                    Double.parseDouble(partes[2].trim())) / 1000.0;
         } catch (NumberFormatException e) {
             return Double.MAX_VALUE;
         }
@@ -87,22 +87,27 @@ public class Impressora3DService {
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                    Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
     private ImpressoraRespostaDTO convertToDTO(Impressora3D impressora) {
+        List<TecnologiaTipo> tecnologias = impressora.getTipo() != null && impressora.getTipo().getTecnologias() != null
+                ? impressora.getTipo().getTecnologias().stream().map(Tecnologia::getNome).collect(Collectors.toList())
+                : Collections.emptyList();
+
         return ImpressoraRespostaDTO.builder()
                 .id(impressora.getId())
                 .modelo(impressora.getModelo())
-                .material(impressora.getMaterial())
-                .tecnologia(impressora.getTecnologia())
+                .material(impressora.getMaterial() != null ? impressora.getMaterial().getNome().name() : null)
+                .tipoNome(impressora.getTipo() != null ? impressora.getTipo().getNome() : null)
+                .tipoDescricao(impressora.getTipo() != null ? impressora.getTipo().getDescricao() : null)
+                .tecnologias(tecnologias)
                 .descricao(impressora.getDescricao())
                 .disponibilidade(impressora.isDisponibilidade())
                 .maker(UsuarioRespostaDTO.builder()
                         .id(impressora.getMaker().getId())
                         .nome(impressora.getMaker().getNome())
-                        .tipo("MAKER")
+                        .perfil(impressora.getMaker().getPerfil())
                         .latitude(impressora.getMaker().getLatitude())
                         .longitude(impressora.getMaker().getLongitude())
                         .telefone(impressora.getMaker().getTelefone())
