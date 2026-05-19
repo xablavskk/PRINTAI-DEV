@@ -32,9 +32,6 @@ public class ServicoImpressao {
     private Tipo tipo;
 
     @Column
-    private String tecnologia;
-
-    @Column
     private String material;
 
     @Column(name = "suporta_pecas_pequenas")
