@@ -1,6 +1,50 @@
-# printai-dev
-repositorio de desenvolvimento do projeto PRINTAI
+# PRINTAI-DEV
 
+Repositório de código-fonte do projeto PRINTAI.
+
+**Stack:** React + Vite (frontend) | Spring Boot / Java 21 + H2 (backend)
+
+---
+
+## Como executar
+
+### Pré-requisitos
+- Java 21+
+- Node.js 18+
+
+### Backend
+
+```bash
+cd api
+./mvnw spring-boot:run
+```
+
+API disponível em `http://localhost:8080`
+Console H2: `http://localhost:8080/h2-console` — JDBC URL: `jdbc:h2:mem:printaidb`
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Aplicação disponível em `http://localhost:5173`
+
+---
+
+## Testes unitários
+
+```bash
+cd api
+./mvnw test
+```
+
+Resultado esperado: **9 testes executados, 0 falhas.**
+Testes do controller em: `api/src/test/java/com/printai/controller/BuscaControllerTest.java`
+
+---
 
 # Guia de Sincronização: PRINTAI ↔ PRINTAI-DEV
 
