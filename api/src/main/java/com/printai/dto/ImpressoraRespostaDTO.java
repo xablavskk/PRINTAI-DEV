@@ -19,4 +19,5 @@ public class ImpressoraRespostaDTO {
     private String descricao;
     private boolean disponibilidade;
     private UsuarioRespostaDTO maker;
+    private Double distanciaKm;
 }

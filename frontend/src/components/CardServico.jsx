@@ -13,7 +13,10 @@ const CardServico = ({ resultado }) => {
           <div>
             <h3 className="service-title">{resultado.maker?.nome || resultado.nome}</h3>
             <p className="service-location" style={{ fontSize: '0.8rem', color: 'var(--accent-color)' }}>
-              São Paulo, SP • 2.5km
+              {resultado.maker?.cidade && resultado.maker?.estado
+                ? `${resultado.maker.cidade}, ${resultado.maker.estado}`
+                : 'Localização não informada'}
+              {resultado.distanciaKm != null ? ` • ${resultado.distanciaKm.toFixed(1)}km` : ''}
             </p>
           </div>
           <div className="maker-avatar">

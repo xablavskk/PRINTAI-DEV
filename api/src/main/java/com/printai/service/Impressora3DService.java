@@ -63,7 +63,18 @@ public class Impressora3DService {
                     .collect(Collectors.toList());
         }
 
-        return impressoras.stream().map(this::convertToDTO).collect(Collectors.toList());
+        final Double latFinal = lat;
+        final Double lonFinal = lon;
+
+        return impressoras.stream().map(i -> {
+            ImpressoraRespostaDTO dto = convertToDTO(i);
+            if (latFinal != null && lonFinal != null && i.getMaker() != null) {
+                double dist = calcularDistancia(latFinal, lonFinal,
+                        i.getMaker().getLatitude(), i.getMaker().getLongitude());
+                dto.setDistanciaKm(Math.round(dist * 10.0) / 10.0);
+            }
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     private double calcularVolumeCm3(String volumeImpressao) {
@@ -111,6 +122,8 @@ public class Impressora3DService {
                         .latitude(impressora.getMaker().getLatitude())
                         .longitude(impressora.getMaker().getLongitude())
                         .telefone(impressora.getMaker().getTelefone())
+                        .cidade(impressora.getMaker().getCidade())
+                        .estado(impressora.getMaker().getEstado())
                         .build())
                 .build();
     }
