@@ -83,6 +83,8 @@ public class ServicoImpressaoService {
                     .latitude(entidade.getMaker().getLatitude())
                     .longitude(entidade.getMaker().getLongitude())
                     .telefone(entidade.getMaker().getTelefone())
+                    .cidade(entidade.getMaker().getCidade())
+                    .estado(entidade.getMaker().getEstado())
                     .build();
         }
 

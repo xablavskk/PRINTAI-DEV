@@ -14,4 +14,6 @@ public class UsuarioRespostaDTO {
     private Double latitude;
     private Double longitude;
     private String telefone;
+    private String cidade;
+    private String estado;
 }
