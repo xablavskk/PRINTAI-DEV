@@ -34,8 +34,9 @@ public class ServicoImpressao {
     @Column
     private String tecnologia;
 
-    @Column
-    private String material;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "material_id")
+    private Material material;
 
     @Column(name = "suporta_pecas_pequenas")
     private boolean suportaPecasPequenas;

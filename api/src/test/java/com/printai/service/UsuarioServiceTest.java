@@ -1,9 +1,12 @@
 package com.printai.service;
 
+import com.printai.dto.CadastroClienteRequestDTO;
+import com.printai.dto.CadastroClienteRespostaDTO;
 import com.printai.dto.CadastroMakerRequestDTO;
 import com.printai.dto.CadastroMakerRespostaDTO;
 import com.printai.dto.ServicoImpressaoRequestDTO;
 import com.printai.model.*;
+import com.printai.repository.MaterialRepository;
 import com.printai.repository.ServicoImpressaoRepository;
 import com.printai.repository.TipoRepository;
 import com.printai.repository.UsuarioRepository;
@@ -29,6 +32,7 @@ class UsuarioServiceTest {
     @Mock private ServicoImpressaoRepository servicoImpressaoRepository;
     @Mock private TipoRepository tipoRepository;
     @Mock private GeocodificacaoService geocodificacaoService;
+    @Mock private MaterialRepository materialRepository;
 
     @InjectMocks
     private UsuarioService usuarioService;
@@ -115,6 +119,8 @@ class UsuarioServiceTest {
 
         Tipo tipoFilamento = Tipo.builder().id(1L).nome("Filamento").build();
         when(tipoRepository.findById(1L)).thenReturn(Optional.of(tipoFilamento));
+        Material materialPla = Material.builder().id(1L).nome(MaterialTipo.PLA).build();
+        when(materialRepository.findByNome(MaterialTipo.PLA)).thenReturn(Optional.of(materialPla));
         when(servicoImpressaoRepository.saveAll(any())).thenReturn(List.of());
 
         CadastroMakerRespostaDTO resposta = usuarioService.cadastrarMaker(dtoPadrao);
@@ -202,5 +208,47 @@ class UsuarioServiceTest {
 
         assertThat(resposta.getTotalServicos()).isEqualTo(0);
         verify(servicoImpressaoRepository, never()).saveAll(any());
+    }
+
+    // ===================== Cadastro de Cliente =====================
+
+    @Test
+    @DisplayName("Cadastro de cliente com dados válidos deve salvar cliente com sucesso")
+    void cadastrarCliente_dadosValidos_salvaClienteComSucesso() {
+        CadastroClienteRequestDTO clienteDTO = CadastroClienteRequestDTO.builder()
+                .nome("João Cliente")
+                .email("joao@printai.com")
+                .senha("senha123")
+                .telefone("11988880000")
+                .cidade("São Paulo")
+                .estado("SP")
+                .logradouro("Avenida Paulista")
+                .numero("1000")
+                .bairro("Bela Vista")
+                .cep("01310100")
+                .build();
+
+        when(usuarioRepository.findByEmail("joao@printai.com")).thenReturn(Optional.empty());
+        when(geocodificacaoService.geocodificar(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(new double[]{-23.56, -46.65});
+
+        Usuario clienteSalvo = Usuario.builder()
+                .id(2L).nome("João Cliente").email("joao@printai.com")
+                .telefone("11988880000").cidade("São Paulo").estado("SP")
+                .latitude(-23.56).longitude(-46.65)
+                .perfil(Perfil.CLIENTE).statusAprovacao(true)
+                .build();
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(clienteSalvo);
+
+        CadastroClienteRespostaDTO resposta = usuarioService.cadastrarCliente(clienteDTO);
+
+        assertThat(resposta.getId()).isEqualTo(2L);
+        assertThat(resposta.getNome()).isEqualTo("João Cliente");
+        assertThat(resposta.getEmail()).isEqualTo("joao@printai.com");
+        assertThat(resposta.getLatitude()).isEqualTo(-23.56);
+        assertThat(resposta.getLongitude()).isEqualTo(-46.65);
+        assertThat(resposta.getMensagem()).contains("sucesso");
+
+        verify(usuarioRepository).save(any(Usuario.class));
     }
 }

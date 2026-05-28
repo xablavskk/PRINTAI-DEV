@@ -1,9 +1,12 @@
 package com.printai.service;
 
+import com.printai.dto.CadastroClienteRequestDTO;
+import com.printai.dto.CadastroClienteRespostaDTO;
 import com.printai.dto.CadastroMakerRequestDTO;
 import com.printai.dto.CadastroMakerRespostaDTO;
 import com.printai.dto.ServicoImpressaoRequestDTO;
 import com.printai.model.*;
+import com.printai.repository.MaterialRepository;
 import com.printai.repository.ServicoImpressaoRepository;
 import com.printai.repository.TipoRepository;
 import com.printai.repository.UsuarioRepository;
@@ -24,6 +27,7 @@ public class UsuarioService {
     private final ServicoImpressaoRepository servicoImpressaoRepository;
     private final TipoRepository tipoRepository;
     private final GeocodificacaoService geocodificacaoService;
+    private final MaterialRepository materialRepository;
 
     @Transactional
     public CadastroMakerRespostaDTO cadastrarMaker(CadastroMakerRequestDTO dto) {
@@ -93,6 +97,17 @@ public class UsuarioService {
                             .orElseThrow(() -> new IllegalArgumentException("Tipo de impressão não encontrado: id=" + s.getTipoId()));
                 }
 
+                Material materialObj = null;
+                if (s.getMaterial() != null && !s.getMaterial().isBlank()) {
+                    try {
+                        MaterialTipo materialTipo = MaterialTipo.valueOf(s.getMaterial().toUpperCase().trim());
+                        materialObj = materialRepository.findByNome(materialTipo)
+                                .orElseThrow(() -> new IllegalArgumentException("Material não encontrado: " + s.getMaterial()));
+                    } catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException("Material inválido: " + s.getMaterial());
+                    }
+                }
+
                 servicos.add(ServicoImpressao.builder()
                         .nome(s.getNome())
                         .precoBase(s.getPrecoBase())
@@ -100,7 +115,7 @@ public class UsuarioService {
                         .condicoesServico(s.getCondicoesServico())
                         .tipo(tipo)
                         .tecnologia(s.getTecnologia())
-                        .material(s.getMaterial())
+                        .material(materialObj)
                         .suportaPecasPequenas(s.isSuportaPecasPequenas())
                         .suportaDecorativos(s.isSuportaDecorativos())
                         .suportaPrototipos(s.isSuportaPrototipos())
@@ -128,6 +143,71 @@ public class UsuarioService {
                 .statusAprovacao(salvo.getStatusAprovacao())
                 .totalServicos(totalServicos)
                 .mensagem(mensagem)
+                .build();
+    }
+
+    @Transactional
+    public CadastroClienteRespostaDTO cadastrarCliente(CadastroClienteRequestDTO dto) {
+        if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("E-mail já cadastrado: " + dto.getEmail());
+        }
+
+        Double latitude = null;
+        Double longitude = null;
+
+        // Endereço é opcional para cliente — geocodifica só se cidade foi informada
+        if (dto.getCidade() != null && !dto.getCidade().isBlank()) {
+            double[] coordenadas = geocodificacaoService.geocodificar(
+                    dto.getLogradouro(), dto.getNumero(), dto.getBairro(),
+                    dto.getCidade(), dto.getEstado(), dto.getCep(),
+                    dto.getPais() != null ? dto.getPais() : "Brasil"
+            );
+            if (coordenadas != null) {
+                latitude = coordenadas[0];
+                longitude = coordenadas[1];
+            } else {
+                log.warn("Não foi possível geocodificar o endereço do Cliente '{}'.", dto.getNome());
+            }
+        }
+
+        Endereco endereco = Endereco.builder()
+                .logradouro(dto.getLogradouro())
+                .numero(dto.getNumero())
+                .complemento(dto.getComplemento())
+                .bairro(dto.getBairro())
+                .cidade(dto.getCidade())
+                .estado(dto.getEstado())
+                .cep(dto.getCep())
+                .pais(dto.getPais() != null ? dto.getPais() : "Brasil")
+                .build();
+
+        Usuario cliente = Usuario.builder()
+                .nome(dto.getNome())
+                .email(dto.getEmail())
+                .senha(dto.getSenha()) // TODO: hash com BCrypt
+                .telefone(dto.getTelefone())
+                .cidade(dto.getCidade())
+                .estado(dto.getEstado())
+                .endereco(endereco)
+                .latitude(latitude)
+                .longitude(longitude)
+                .perfil(Perfil.CLIENTE)
+                .statusAprovacao(true)
+                .build();
+
+        Usuario salvo = usuarioRepository.save(cliente);
+        log.info("Cliente '{}' cadastrado com sucesso.", salvo.getNome());
+
+        return CadastroClienteRespostaDTO.builder()
+                .id(salvo.getId())
+                .nome(salvo.getNome())
+                .email(salvo.getEmail())
+                .telefone(salvo.getTelefone())
+                .cidade(salvo.getCidade())
+                .estado(salvo.getEstado())
+                .latitude(salvo.getLatitude())
+                .longitude(salvo.getLongitude())
+                .mensagem("Cadastro realizado com sucesso!")
                 .build();
     }
 }

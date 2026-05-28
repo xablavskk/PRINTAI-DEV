@@ -5,6 +5,7 @@ import com.printai.dto.BuscaServicoRequestDTO;
 import com.printai.dto.ServicoRespostaDTO;
 import com.printai.dto.UsuarioRespostaDTO;
 import com.printai.model.AvaliacaoMaker;
+import com.printai.model.MaterialTipo;
 import com.printai.model.ServicoImpressao;
 import com.printai.model.Tecnologia;
 import com.printai.model.TecnologiaTipo;
@@ -52,7 +53,7 @@ public class ServicoImpressaoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ServicoRespostaDTO> buscarServicos(BuscaServicoRequestDTO buscaDTO) {
+    public List<ServicoRespostaDTO> buscarServicos(BuscaServicoRequestDTO buscaDTO, Double lat, Double lon) {
         List<ServicoImpressao> servicos;
 
         if (buscaDTO.getBuscaSimplificada() != null && !buscaDTO.getBuscaSimplificada().isBlank()) {
@@ -60,20 +61,44 @@ public class ServicoImpressaoService {
             boolean pecasPequenas = s.contains("peça pequena") || s.contains("pequeno") || s.contains("pequena");
             boolean decorativos = s.contains("decorativo") || s.contains("decoração") || s.contains("enfeite");
             boolean prototipos = s.contains("protótipo") || s.contains("prototipo") || s.contains("teste");
-            if (!pecasPequenas && !decorativos && !prototipos) {
-                servicos = repository.findAll();
-            } else {
-                servicos = repository.buscarSimplificado(pecasPequenas, decorativos, prototipos);
-            }
+            servicos = (!pecasPequenas && !decorativos && !prototipos)
+                    ? repository.findAll()
+                    : repository.buscarSimplificado(pecasPequenas, decorativos, prototipos);
         } else if (buscaDTO.getTecnologia() != null ||
                    (buscaDTO.getMaterial() != null && !buscaDTO.getMaterial().isBlank()) ||
                    (buscaDTO.getModelo() != null && !buscaDTO.getModelo().isBlank())) {
-            servicos = repository.buscarAvancado(buscaDTO.getTecnologia(), buscaDTO.getMaterial(), buscaDTO.getModelo());
+            MaterialTipo materialTipo = null;
+            if (buscaDTO.getMaterial() != null && !buscaDTO.getMaterial().isBlank()) {
+                try {
+                    materialTipo = MaterialTipo.valueOf(buscaDTO.getMaterial().trim().toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    // Ignora filtro inválido
+                }
+            }
+            servicos = repository.buscarAvancado(buscaDTO.getTecnologia(), materialTipo, buscaDTO.getModelo());
         } else {
             servicos = repository.findAll();
         }
 
-        return servicos.stream().map(this::converterParaDTO).collect(Collectors.toList());
+        return servicos.stream().map(s -> {
+            ServicoRespostaDTO dto = converterParaDTO(s);
+            if (lat != null && lon != null && s.getMaker() != null
+                    && s.getMaker().getLatitude() != null && s.getMaker().getLongitude() != null) {
+                double dist = calcularDistancia(lat, lon, s.getMaker().getLatitude(), s.getMaker().getLongitude());
+                dto.setDistanciaKm(Math.round(dist * 10.0) / 10.0);
+            }
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    private double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
     private ServicoRespostaDTO converterParaDTO(ServicoImpressao entidade) {
@@ -91,23 +116,24 @@ public class ServicoImpressaoService {
                     .build();
         }
 
-        String volumeMaximo = "Não informado";
-        // volumeImpressao vem da impressora, não do serviço — evita lazy load
-
         List<TecnologiaTipo> tecnologias = entidade.getTipo() != null && entidade.getTipo().getTecnologias() != null
                 ? entidade.getTipo().getTecnologias().stream().map(Tecnologia::getNome).collect(Collectors.toList())
                 : Collections.emptyList();
+
+        String materialNome = entidade.getMaterial() != null
+                ? entidade.getMaterial().getNome().name()
+                : null;
 
         return ServicoRespostaDTO.builder()
                 .id(entidade.getId())
                 .nome(entidade.getNome())
                 .descricao(entidade.getDescricao())
                 .condicoesServico(entidade.getCondicoesServico())
-                .volumeImpressao(volumeMaximo)
+                .volumeImpressao("Não informado")
                 .tipoNome(entidade.getTipo() != null ? entidade.getTipo().getNome() : null)
                 .tipoDescricao(entidade.getTipo() != null ? entidade.getTipo().getDescricao() : null)
                 .tecnologias(tecnologias)
-                .material(entidade.getMaterial())
+                .material(materialNome)
                 .precoBase(entidade.getPrecoBase())
                 .maker(makerDTO)
                 .build();
