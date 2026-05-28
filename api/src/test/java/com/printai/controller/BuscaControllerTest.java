@@ -137,7 +137,7 @@ class BuscaControllerTest {
                 .maker(maker)
                 .build();
 
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(List.of(impressora));
 
         mockMvc.perform(get("/api/busca/impressoras"))
@@ -158,7 +158,7 @@ class BuscaControllerTest {
                 .disponibilidade(true)
                 .build();
 
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(List.of(impressoraFDM));
 
         mockMvc.perform(get("/api/busca/impressoras").param("tecnologia", "FDM"))
@@ -169,7 +169,7 @@ class BuscaControllerTest {
     @Test
     @DisplayName("Filtrar impressoras por tecnologia inexistente deve retornar lista vazia")
     void buscarImpressoras_filtroTecnologiaInexistente_retornaVazio() throws Exception {
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/busca/impressoras").param("tecnologia", "SLA"))
@@ -187,7 +187,7 @@ class BuscaControllerTest {
                 .disponibilidade(true)
                 .build();
 
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(List.of(impressoraSemMaterial));
 
         mockMvc.perform(get("/api/busca/impressoras"))
