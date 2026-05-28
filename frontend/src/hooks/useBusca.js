@@ -1,19 +1,31 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { buscaService } from '../services/buscaService';
 
 export const useBusca = () => {
   const [resultados, setResultados] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const coordsRef = useRef(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => { coordsRef.current = { lat: coords.latitude, lon: coords.longitude }; },
+        () => {  }
+      );
+    }
+  }, []);
 
   const buscar = useCallback(async (params) => {
     setLoading(true);
     setError(null);
     try {
-      const temFiltroImpressora = params.tecnologia || params.material || params.modelo || params.volumeMaximo;
-      const data = temFiltroImpressora
-        ? await buscaService.listarImpressoras(params)
-        : await buscaService.listarServicos(params);
+      const coords = coordsRef.current;
+      const paramsComCoords = coords ? { ...params, lat: coords.lat, lon: coords.lon } : params;
+
+      const data = params.volumeMaximo
+        ? await buscaService.listarImpressoras(paramsComCoords)
+        : await buscaService.listarServicos(paramsComCoords);
       setResultados(data);
       return data;
     } catch (err) {

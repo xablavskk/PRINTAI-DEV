@@ -4,6 +4,7 @@ import com.printai.dto.BuscaServicoRequestDTO;
 import com.printai.dto.ImpressoraRespostaDTO;
 import com.printai.dto.UsuarioRespostaDTO;
 import com.printai.model.Impressora3D;
+import com.printai.model.MaterialTipo;
 import com.printai.model.Tecnologia;
 import com.printai.model.TecnologiaTipo;
 import com.printai.repository.Impressora3DRepository;
@@ -52,10 +53,11 @@ public class Impressora3DService {
                     .collect(Collectors.toList());
         }
 
-        if (buscaDTO.getMaterial() != null && !buscaDTO.getMaterial().isBlank()) {
+        if (buscaDTO.getMaterial() != null) {
+            MaterialTipo filtroMaterial = buscaDTO.getMaterial();
             impressoras = impressoras.stream()
                     .filter(i -> i.getMaterial() != null &&
-                            i.getMaterial().getNome().name().equalsIgnoreCase(buscaDTO.getMaterial()))
+                            i.getMaterial().getNome() == filtroMaterial)
                     .collect(Collectors.toList());
         }
 

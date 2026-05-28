@@ -4,6 +4,7 @@ import com.printai.dto.CadastroMakerRequestDTO;
 import com.printai.dto.CadastroMakerRespostaDTO;
 import com.printai.dto.ServicoImpressaoRequestDTO;
 import com.printai.model.*;
+import com.printai.repository.MaterialRepository;
 import com.printai.repository.ServicoImpressaoRepository;
 import com.printai.repository.TipoRepository;
 import com.printai.repository.UsuarioRepository;
@@ -28,6 +29,7 @@ class UsuarioServiceTest {
     @Mock private UsuarioRepository usuarioRepository;
     @Mock private ServicoImpressaoRepository servicoImpressaoRepository;
     @Mock private TipoRepository tipoRepository;
+    @Mock private MaterialRepository materialRepository;
     @Mock private GeocodificacaoService geocodificacaoService;
 
     @InjectMocks
@@ -81,20 +83,23 @@ class UsuarioServiceTest {
         assertThat(resposta.getTotalServicos()).isEqualTo(0);
         assertThat(resposta.getMensagem()).contains("sucesso");
 
-        verify(usuarioRepository).save(any(Usuario.class));
+        verify(usuarioRepository).save(argThat(u ->
+                u.getPerfil() == Perfil.MAKER &&
+                Boolean.TRUE.equals(u.getStatusAprovacao())
+        ));
         verify(servicoImpressaoRepository, never()).saveAll(any());
     }
 
     @Test
     @DisplayName("Cadastro com serviços deve salvar maker e serviços vinculados")
     void cadastrarMaker_comServicos_salvaMakerEServicos() {
+        // materialId referencia a entidade Material — não mais String livre
         ServicoImpressaoRequestDTO servico = ServicoImpressaoRequestDTO.builder()
                 .nome("Impressão FDM")
                 .precoBase(80.0)
                 .descricao("Serviço FDM de alta qualidade")
                 .tipoId(1L)
-                .tecnologia("FDM")
-                .material("PLA")
+                .materialId(1L)
                 .suportaPecasPequenas(true)
                 .suportaPrototipos(true)
                 .build();
@@ -115,6 +120,10 @@ class UsuarioServiceTest {
 
         Tipo tipoFilamento = Tipo.builder().id(1L).nome("Filamento").build();
         when(tipoRepository.findById(1L)).thenReturn(Optional.of(tipoFilamento));
+
+        Material materialPla = Material.builder().id(1L).nome(MaterialTipo.PLA).build();
+        when(materialRepository.findById(1L)).thenReturn(Optional.of(materialPla));
+
         when(servicoImpressaoRepository.saveAll(any())).thenReturn(List.of());
 
         CadastroMakerRespostaDTO resposta = usuarioService.cadastrarMaker(dtoPadrao);
@@ -123,8 +132,59 @@ class UsuarioServiceTest {
         assertThat(resposta.getMensagem()).contains("1 serviço(s)");
 
         verify(tipoRepository).findById(1L);
+        verify(materialRepository).findById(1L);
         verify(servicoImpressaoRepository).saveAll(argThat(lista ->
                 ((List<?>) lista).size() == 1
+        ));
+    }
+
+    @Test
+    @DisplayName("Cadastro com serviço sem tipo e sem material deve salvar normalmente")
+    void cadastrarMaker_comServico_semTipoESemMaterial_salvaNormalmente() {
+        ServicoImpressaoRequestDTO servico = ServicoImpressaoRequestDTO.builder()
+                .nome("Serviço Genérico")
+                .precoBase(50.0)
+                .build();
+
+        dtoPadrao.setServicos(List.of(servico));
+
+        when(usuarioRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(geocodificacaoService.geocodificar(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(new double[]{-23.55, -46.63});
+
+        Usuario makerSalvo = Usuario.builder()
+                .id(1L).nome("Mario Maker").email("mario@printai.com")
+                .perfil(Perfil.MAKER).statusAprovacao(true).build();
+        when(usuarioRepository.save(any())).thenReturn(makerSalvo);
+        when(servicoImpressaoRepository.saveAll(any())).thenReturn(List.of());
+
+        CadastroMakerRespostaDTO resposta = usuarioService.cadastrarMaker(dtoPadrao);
+
+        assertThat(resposta.getTotalServicos()).isEqualTo(1);
+        // tipoId e materialId nulos — não deve consultar os repositórios
+        verify(tipoRepository, never()).findById(any());
+        verify(materialRepository, never()).findById(any());
+    }
+
+    @Test
+    @DisplayName("Cadastro deve criar maker com statusAprovacao true (aprovação automática)")
+    void cadastrarMaker_statusAprovacaoDeveSerTrue() {
+        when(usuarioRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(geocodificacaoService.geocodificar(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(null);
+
+        Usuario makerSalvo = Usuario.builder()
+                .id(1L).nome("Mario Maker").email("mario@printai.com")
+                .perfil(Perfil.MAKER).statusAprovacao(true).build();
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(makerSalvo);
+
+        CadastroMakerRespostaDTO resposta = usuarioService.cadastrarMaker(dtoPadrao);
+
+        assertThat(resposta.getStatusAprovacao()).isTrue();
+
+        // Verifica que o objeto salvo no banco tem statusAprovacao = true
+        verify(usuarioRepository).save(argThat(u ->
+                Boolean.TRUE.equals(u.getStatusAprovacao())
         ));
     }
 
@@ -161,6 +221,28 @@ class UsuarioServiceTest {
         assertThatThrownBy(() -> usuarioService.cadastrarMaker(dtoPadrao))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Tipo de impressão não encontrado");
+    }
+
+    @Test
+    @DisplayName("Cadastro com materialId inexistente deve lançar IllegalArgumentException")
+    void cadastrarMaker_materialInexistente_lancaExcecao() {
+        dtoPadrao.setServicos(List.of(
+                ServicoImpressaoRequestDTO.builder()
+                        .nome("Serviço X").precoBase(50.0).materialId(99L).build()
+        ));
+
+        when(usuarioRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(geocodificacaoService.geocodificar(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(null);
+
+        Usuario makerSalvo = Usuario.builder().id(1L).nome("Mario Maker")
+                .email("mario@printai.com").perfil(Perfil.MAKER).statusAprovacao(true).build();
+        when(usuarioRepository.save(any())).thenReturn(makerSalvo);
+        when(materialRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> usuarioService.cadastrarMaker(dtoPadrao))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Material não encontrado");
     }
 
     @Test

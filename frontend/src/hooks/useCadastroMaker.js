@@ -23,14 +23,12 @@ const servicoVazio = () => ({
   descricao: '',
   condicoesServico: '',
   tipoId: '',
-  tecnologia: '',
-  material: '',
+  materialId: '',      
   suportaPecasPequenas: false,
   suportaDecorativos: false,
   suportaPrototipos: false,
 });
 
-// --- Funções de máscara ---
 const mascararTelefone = (valor) => {
   const digits = valor.replace(/\D/g, '').slice(0, 11);
   if (digits.length <= 10) {
@@ -71,16 +69,15 @@ export const useCadastroMaker = () => {
   const [form, setForm] = useState(estadoInicial);
   const [servicos, setServicos] = useState([]);
   const [tipos, setTipos] = useState([]);
+  const [materiais, setMateriais] = useState([]);
   const [loading, setLoading] = useState(false);
   const [erros, setErros] = useState({});
   const [sucesso, setSucesso] = useState(null);
   const [erroGeral, setErroGeral] = useState(null);
 
-  // Busca tipos de impressão ao montar
   useEffect(() => {
-    makerService.listarTipos()
-      .then(setTipos)
-      .catch(() => setTipos([]));
+    makerService.listarTipos().then(setTipos).catch(() => setTipos([]));
+    makerService.listarMateriais().then(setMateriais).catch(() => setMateriais([]));
   }, []);
 
   const handleChange = (e) => {
@@ -90,7 +87,6 @@ export const useCadastroMaker = () => {
     if (erros[name]) setErros((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  // Gerenciamento de serviços
   const adicionarServico = () => setServicos((prev) => [...prev, servicoVazio()]);
 
   const removerServico = (index) =>
@@ -120,9 +116,15 @@ export const useCadastroMaker = () => {
         cep: limparMascara(form.cep),
         servicos: servicos.length > 0
           ? servicos.map((s) => ({
-              ...s,
-              tipoId: s.tipoId ? Number(s.tipoId) : null,
+              nome: s.nome,
               precoBase: s.precoBase ? Number(s.precoBase) : 0,
+              descricao: s.descricao,
+              condicoesServico: s.condicoesServico,
+              tipoId: s.tipoId ? Number(s.tipoId) : null,
+              materialId: s.materialId ? Number(s.materialId) : null,
+              suportaPecasPequenas: s.suportaPecasPequenas,
+              suportaDecorativos: s.suportaDecorativos,
+              suportaPrototipos: s.suportaPrototipos,
             }))
           : [],
       };
@@ -147,7 +149,7 @@ export const useCadastroMaker = () => {
   };
 
   return {
-    form, servicos, tipos,
+    form, servicos, tipos, materiais,
     loading, erros, sucesso, erroGeral,
     handleChange, handleServicoChange,
     adicionarServico, removerServico,

@@ -24,4 +24,5 @@ public class ServicoRespostaDTO {
     private List<AvaliacaoDTO> avaliacoes;
     private Double mediaAvaliacao;
     private Integer totalAvaliacoes;
+    private Double distanciaKm;
 }
