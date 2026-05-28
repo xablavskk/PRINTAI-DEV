@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -108,15 +107,14 @@ class BuscaControllerTest {
     }
 
     @Test
-    @DisplayName("Buscar detalhe com ID inexistente deve lancar excecao de servico nao encontrado")
+    @DisplayName("Buscar detalhe com ID inexistente deve retornar 500 com mensagem de erro")
     void buscarDetalhe_idInexistente_retornaErro() throws Exception {
         when(servicoImpressaoService.buscarPorId(99L))
                 .thenThrow(new RuntimeException("Serviço não encontrado"));
 
         mockMvc.perform(get("/api/busca/detalhe/99"))
-                .andExpect(result -> assertNotNull(result.getResolvedException()))
-                .andExpect(result -> assertInstanceOf(RuntimeException.class,
-                        result.getResolvedException().getCause()));
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.erro").exists());
     }
 
     // ===================== /busca/impressoras =====================
