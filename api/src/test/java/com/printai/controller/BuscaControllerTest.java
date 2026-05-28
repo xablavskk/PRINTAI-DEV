@@ -49,7 +49,7 @@ class BuscaControllerTest {
                 .precoBase(50.0)
                 .build();
 
-        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class)))
+        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class), any(), any()))
                 .thenReturn(List.of(servico));
 
         mockMvc.perform(get("/api/busca/servicos"))
@@ -62,7 +62,7 @@ class BuscaControllerTest {
     @Test
     @DisplayName("Buscar servicos sem resultados deve retornar lista vazia")
     void buscarServicos_semResultados_retornaListaVazia() throws Exception {
-        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class)))
+        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class), any(), any()))
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/busca/servicos"))

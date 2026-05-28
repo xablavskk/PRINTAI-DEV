@@ -10,8 +10,10 @@ export const useBusca = () => {
     setLoading(true);
     setError(null);
     try {
-      const temFiltroImpressora = params.tecnologia || params.material || params.modelo || params.volumeMaximo;
-      const data = temFiltroImpressora
+      // Apenas modelo e volumeMaximo são filtros exclusivos de impressoras.
+      // Tecnologia e material também existem em serviços, então vão para /servicos.
+      const temFiltroExclusivoImpressora = params.modelo || params.volumeMaximo;
+      const data = temFiltroExclusivoImpressora
         ? await buscaService.listarImpressoras(params)
         : await buscaService.listarServicos(params);
       setResultados(data);

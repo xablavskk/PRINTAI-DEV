@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SearchServices from './pages/BuscaServicos';
 import CadastroMaker from './pages/CadastroMaker';
+import CadastroCliente from './pages/CadastroCliente';
 import { Printer } from 'lucide-react';
 import './App.css';
 
@@ -19,8 +20,8 @@ function App() {
               <Link to="/maker/cadastro" className="btn btn-outline" style={{ marginRight: '1rem', textDecoration: 'none' }}>
                 Seja um Maker
               </Link>
-              <Link to="/login" className="btn btn-primary" style={{ textDecoration: 'none' }}>
-                Entrar
+              <Link to="/cliente/cadastro" className="btn btn-primary" style={{ textDecoration: 'none' }}>
+                Criar Conta
               </Link>
             </nav>
           </div>
@@ -31,6 +32,7 @@ function App() {
             <Route path="/" element={<SearchServices />} />
             <Route path="/busca" element={<SearchServices />} />
             <Route path="/maker/cadastro" element={<CadastroMaker />} />
+            <Route path="/cliente/cadastro" element={<CadastroCliente />} />
           </Routes>
         </main>
       </div>

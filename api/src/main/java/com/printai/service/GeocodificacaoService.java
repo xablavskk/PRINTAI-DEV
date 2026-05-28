@@ -30,17 +30,15 @@ public class GeocodificacaoService {
     public double[] geocodificar(String logradouro, String numero, String bairro,
                                   String cidade, String estado, String cep, String pais) {
         String paisFinal = pais != null && !pais.isBlank() ? pais : "Brasil";
+        String street = logradouro + (numero != null && !numero.isBlank() ? " " + numero : "");
 
-        double[] resultado = tentarGeocodificar(
-                logradouro + (numero != null && !numero.isBlank() ? " " + numero : ""),
-                bairro, cidade, estado, cep, paisFinal
-        );
+        double[] resultado = tentarEstruturado(street, cidade, estado, cep, paisFinal);
         if (resultado != null) return resultado;
 
-        resultado = tentarGeocodificar(logradouro, bairro, cidade, estado, null, paisFinal);
+        resultado = tentarEstruturado(logradouro, cidade, estado, cep, paisFinal);
         if (resultado != null) return resultado;
 
-        resultado = tentarGeocodificar(null, null, cidade, estado, null, paisFinal);
+        resultado = tentarEstruturado(null, cidade, estado, null, paisFinal);
         if (resultado != null) {
             log.warn("Geocodificação usou fallback cidade+estado para: {} - {}", cidade, estado);
             return resultado;
@@ -50,26 +48,21 @@ public class GeocodificacaoService {
         return null;
     }
 
-    private double[] tentarGeocodificar(String logradouro, String bairro,
-                                         String cidade, String estado, String cep, String pais) {
+    private double[] tentarEstruturado(String street, String city, String state, String postalcode, String country) {
         try {
-            StringBuilder query = new StringBuilder();
-            if (logradouro != null && !logradouro.isBlank()) query.append(logradouro).append(", ");
-            if (bairro != null && !bairro.isBlank())         query.append(bairro).append(", ");
-            if (cidade != null && !cidade.isBlank())         query.append(cidade).append(", ");
-            if (estado != null && !estado.isBlank())         query.append(estado).append(", ");
-            if (cep != null && !cep.isBlank())               query.append(cep).append(", ");
-            query.append(pais);
-
-            String queryStr = query.toString().replaceAll(",\\s*$", "").trim();
-
-            URI uri = UriComponentsBuilder.fromHttpUrl(NOMINATIM_URL)
-                    .queryParam("q", queryStr)
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(NOMINATIM_URL)
                     .queryParam("format", "json")
                     .queryParam("limit", "1")
                     .queryParam("countrycodes", "br")
-                    .build()
-                    .toUri();
+                    .queryParam("addressdetails", "0");
+
+            if (street != null && !street.isBlank())      builder.queryParam("street", street);
+            if (city != null && !city.isBlank())          builder.queryParam("city", city);
+            if (state != null && !state.isBlank())        builder.queryParam("state", state);
+            if (postalcode != null && !postalcode.isBlank()) builder.queryParam("postalcode", postalcode.replaceAll("\\D", ""));
+            builder.queryParam("country", country);
+
+            URI uri = builder.build().toUri();
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
@@ -86,7 +79,7 @@ public class GeocodificacaoService {
                     JsonNode first = results.get(0);
                     double lat = first.get("lat").asDouble();
                     double lon = first.get("lon").asDouble();
-                    log.info("Geocodificação OK para '{}': lat={}, lon={}", queryStr, lat, lon);
+                    log.info("Geocodificação OK [street={}, city={}, state={}]: lat={}, lon={}", street, city, state, lat, lon);
                     return new double[]{lat, lon};
                 }
             }
