@@ -1,5 +1,6 @@
 package com.printai.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -46,6 +47,6 @@ public class CadastroMakerRequestDTO {
 
     private String pais = "Brasil";
 
-    // Serviços de impressão iniciais (opcional)
+    @Valid
     private java.util.List<ServicoImpressaoRequestDTO> servicos;
 }

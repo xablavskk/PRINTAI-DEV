@@ -4,11 +4,9 @@ import { Printer, CheckCircle, AlertCircle, Loader, Plus, Trash2 } from 'lucide-
 import { useCadastroMaker } from '../hooks/useCadastroMaker';
 import './CadastroMaker.css';
 
-const MATERIAIS = ['PLA','ABS','PETG','RESINA','TPU','NYLON','ASA','PEEK','CARBON_FIBER'];
-
 const CadastroMaker = () => {
   const {
-    form, servicos, tipos,
+    form, servicos, tipos, materiais,
     loading, erros, sucesso, erroGeral,
     handleChange, handleServicoChange,
     adicionarServico, removerServico,
@@ -217,25 +215,15 @@ const CadastroMaker = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Tecnologia</label>
-                  <select name="tecnologia" value={servico.tecnologia}
-                    onChange={(e) => handleServicoChange(index, e)}>
-                    <option value="">Selecione</option>
-                    {servico.tipoId
-                      ? (tipos.find(t => String(t.id) === String(servico.tipoId))?.tecnologias || [])
-                          .map(tec => <option key={tec} value={tec}>{tec}</option>)
-                      : ['FDM','SLA','DLP','SLS','MJF','BINDER_JETTING']
-                          .map(tec => <option key={tec} value={tec}>{tec}</option>)
-                    }
-                  </select>
-                </div>
-
-                <div className="form-group">
                   <label>Material</label>
-                  <select name="material" value={servico.material}
+                  <select name="materialId" value={servico.materialId}
                     onChange={(e) => handleServicoChange(index, e)}>
                     <option value="">Selecione</option>
-                    {MATERIAIS.map(m => <option key={m} value={m}>{m}</option>)}
+                    {materiais.map(m => (
+                      <option key={m.id} value={m.id} title={m.descricao}>
+                        {m.nome}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
