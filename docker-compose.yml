@@ -1,4 +1,23 @@
 services:
+  db:
+    image: mysql:8.4
+    container_name: printai-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: printai
+      MYSQL_USER: printai
+      MYSQL_PASSWORD: printai123
+    ports:
+      - "3306:3306"
+    volumes:
+      - printai_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uprintai", "-pprintai123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     container_name: printai-api
     build:
@@ -8,6 +27,13 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
+      - DB_HOST=db
+      - DB_NAME=printai
+      - DB_USER=printai
+      - DB_PASS=printai123
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
       - ./.m2:/root/.m2
 
@@ -22,3 +48,6 @@ services:
       - backend
     environment:
       - VITE_API_URL=http://localhost:8080/api
+
+volumes:
+  printai_db_data:
