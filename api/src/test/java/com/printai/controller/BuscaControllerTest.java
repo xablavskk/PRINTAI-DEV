@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,7 +49,7 @@ class BuscaControllerTest {
                 .precoBase(50.0)
                 .build();
 
-        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class), nullable(Double.class), nullable(Double.class)))
+        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class)))
                 .thenReturn(List.of(servico));
 
         mockMvc.perform(get("/api/busca/servicos"))
@@ -61,29 +62,13 @@ class BuscaControllerTest {
     @Test
     @DisplayName("Buscar servicos sem resultados deve retornar lista vazia")
     void buscarServicos_semResultados_retornaListaVazia() throws Exception {
-        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class), nullable(Double.class), nullable(Double.class)))
+        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class)))
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/busca/servicos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isEmpty());
-    }
-
-    @Test
-    @DisplayName("Buscar servicos com coordenadas deve retornar distanciaKm preenchida")
-    void buscarServicos_comCoordenadas_retornaDistanciaKm() throws Exception {
-        ServicoRespostaDTO servico = ServicoRespostaDTO.builder()
-                .id(1L).nome("Impressão FDM").material("PLA").precoBase(50.0)
-                .distanciaKm(3.2)
-                .build();
-
-        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class), eq(-23.55), eq(-46.63)))
-                .thenReturn(List.of(servico));
-
-        mockMvc.perform(get("/api/busca/servicos").param("lat", "-23.55").param("lon", "-46.63"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].distanciaKm").value(3.2));
     }
 
     // ===================== /busca/detalhe/{id} =====================

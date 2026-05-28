@@ -20,11 +20,8 @@ public class BuscaController {
     private final Impressora3DService impressora3DService;
 
     @GetMapping("/servicos")
-    public ResponseEntity<List<ServicoRespostaDTO>> buscarServicos(
-            BuscaServicoRequestDTO buscaDTO,
-            @RequestParam(required = false) Double lat,
-            @RequestParam(required = false) Double lon) {
-        List<ServicoRespostaDTO> resultados = servicoImpressaoService.buscarServicos(buscaDTO, lat, lon);
+    public ResponseEntity<List<ServicoRespostaDTO>> buscarServicos(BuscaServicoRequestDTO buscaDTO) {
+        List<ServicoRespostaDTO> resultados = servicoImpressaoService.buscarServicos(buscaDTO);
         return ResponseEntity.ok(resultados);
     }
 

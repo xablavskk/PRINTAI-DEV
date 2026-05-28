@@ -19,9 +19,12 @@ public class ServicoImpressaoRequestDTO {
     private String descricao;
     private String condicoesServico;
 
+    // ID do tipo de impressão (Filamento, Resina, Pó) — buscado via GET /api/tipos
     private Long tipoId;
 
-    private Long materialId;
+    // Strings livres conforme modelo atual
+    private String tecnologia;
+    private String material;
 
     private boolean suportaPecasPequenas;
     private boolean suportaDecorativos;

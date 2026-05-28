@@ -20,15 +20,12 @@ public class MaterialController {
     private final MaterialRepository materialRepository;
 
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> listar() {
-        List<Map<String, Object>> materiais = materialRepository.findAll().stream()
-                .map(m -> {
-                    Map<String, Object> entry = new java.util.LinkedHashMap<>();
-                    entry.put("id", m.getId());
-                    entry.put("nome", m.getNome().name());
-                    entry.put("descricao", m.getDescricao() != null ? m.getDescricao() : "");
-                    return entry;
-                })
+    public ResponseEntity<List<Map<String, String>>> listar() {
+        List<Map<String, String>> materiais = materialRepository.findAll().stream()
+                .map(m -> Map.of(
+                        "nome", m.getNome().name(),
+                        "descricao", m.getDescricao() != null ? m.getDescricao() : ""
+                ))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(materiais);
     }

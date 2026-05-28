@@ -10,9 +10,4 @@ export const makerService = {
     const { data } = await apiClient.get('/tipos');
     return data;
   },
-
-  async listarMateriais() {
-    const { data } = await apiClient.get('/materiais');
-    return data;
-  },
 };

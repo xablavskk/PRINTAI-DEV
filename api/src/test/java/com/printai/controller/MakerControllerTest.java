@@ -56,7 +56,7 @@ class MakerControllerTest {
                 .estado("SP")
                 .latitude(-23.55)
                 .longitude(-46.63)
-                .statusAprovacao(false)
+                .statusAprovacao(true)
                 .totalServicos(0)
                 .mensagem("Cadastro realizado com sucesso!")
                 .build();
@@ -70,7 +70,7 @@ class MakerControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nome").value("Mario Maker"))
                 .andExpect(jsonPath("$.email").value("mario@printai.com"))
-                .andExpect(jsonPath("$.statusAprovacao").value(false))
+                .andExpect(jsonPath("$.statusAprovacao").value(true))
                 .andExpect(jsonPath("$.totalServicos").value(0))
                 .andExpect(jsonPath("$.mensagem").exists());
     }
@@ -82,13 +82,13 @@ class MakerControllerTest {
         dto.setServicos(List.of(
                 ServicoImpressaoRequestDTO.builder()
                         .nome("Impressão FDM").precoBase(80.0)
-                        .tipoId(1L).materialId(1L)
+                        .tipoId(1L).tecnologia("FDM").material("PLA")
                         .suportaPrototipos(true).build()
         ));
 
         CadastroMakerRespostaDTO resposta = CadastroMakerRespostaDTO.builder()
                 .id(1L).nome("Mario Maker").email("mario@printai.com")
-                .statusAprovacao(false).totalServicos(1)
+                .statusAprovacao(true).totalServicos(1)
                 .mensagem("Cadastro realizado com sucesso! 1 serviço(s) cadastrado(s).")
                 .build();
 
