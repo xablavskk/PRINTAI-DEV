@@ -69,7 +69,7 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
                   <strong>{info.maker?.nome}</strong> está em {info.maker?.cidade || 'São Paulo'}, {info.maker?.estado || 'SP'}.
                   <br />
                   <span style={{ fontSize: '0.9rem', color: 'var(--accent-color)' }}>
-                    Aproximadamente {info.distancia?.toFixed(1) || '2.5'}km de você.
+                    Aproximadamente {info.distanciaKm?.toFixed(1) || '2.5'}km de você.
                   </span>
                 </p>
               </section>

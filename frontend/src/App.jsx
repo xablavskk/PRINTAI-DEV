@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SearchServices from './pages/BuscaServicos';
+import CadastroMaker from './pages/CadastroMaker';
 import { Printer } from 'lucide-react';
 import './App.css';
 
@@ -28,8 +29,8 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<SearchServices />} />
-            {/* Outras rotas podem ser adicionadas aqui no futuro */}
             <Route path="/busca" element={<SearchServices />} />
+            <Route path="/maker/cadastro" element={<CadastroMaker />} />
           </Routes>
         </main>
       </div>

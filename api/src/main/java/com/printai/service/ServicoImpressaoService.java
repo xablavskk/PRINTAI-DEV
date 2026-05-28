@@ -12,6 +12,7 @@ import com.printai.repository.AvaliacaoRepository;
 import com.printai.repository.ServicoImpressaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +25,7 @@ public class ServicoImpressaoService {
     private final ServicoImpressaoRepository repository;
     private final AvaliacaoRepository avaliacaoRepository;
 
+    @Transactional(readOnly = true)
     public ServicoRespostaDTO buscarPorId(Long id) {
         ServicoImpressao servico = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
@@ -49,6 +51,7 @@ public class ServicoImpressaoService {
         return dto;
     }
 
+    @Transactional(readOnly = true)
     public List<ServicoRespostaDTO> buscarServicos(BuscaServicoRequestDTO buscaDTO) {
         List<ServicoImpressao> servicos;
 
@@ -89,10 +92,7 @@ public class ServicoImpressaoService {
         }
 
         String volumeMaximo = "Não informado";
-        if (entidade.getMaker() != null && entidade.getMaker().getImpressoras() != null
-                && !entidade.getMaker().getImpressoras().isEmpty()) {
-            volumeMaximo = entidade.getMaker().getImpressoras().get(0).getVolumeImpressao();
-        }
+        // volumeImpressao vem da impressora, não do serviço — evita lazy load
 
         List<TecnologiaTipo> tecnologias = entidade.getTipo() != null && entidade.getTipo().getTecnologias() != null
                 ? entidade.getTipo().getTecnologias().stream().map(Tecnologia::getNome).collect(Collectors.toList())

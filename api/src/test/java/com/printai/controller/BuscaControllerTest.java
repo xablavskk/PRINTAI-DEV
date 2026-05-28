@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -108,15 +107,14 @@ class BuscaControllerTest {
     }
 
     @Test
-    @DisplayName("Buscar detalhe com ID inexistente deve lancar excecao de servico nao encontrado")
+    @DisplayName("Buscar detalhe com ID inexistente deve retornar 500 com mensagem de erro")
     void buscarDetalhe_idInexistente_retornaErro() throws Exception {
         when(servicoImpressaoService.buscarPorId(99L))
                 .thenThrow(new RuntimeException("Serviço não encontrado"));
 
         mockMvc.perform(get("/api/busca/detalhe/99"))
-                .andExpect(result -> assertNotNull(result.getResolvedException()))
-                .andExpect(result -> assertInstanceOf(RuntimeException.class,
-                        result.getResolvedException().getCause()));
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.erro").exists());
     }
 
     // ===================== /busca/impressoras =====================
@@ -139,7 +137,7 @@ class BuscaControllerTest {
                 .maker(maker)
                 .build();
 
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(List.of(impressora));
 
         mockMvc.perform(get("/api/busca/impressoras"))
@@ -160,7 +158,7 @@ class BuscaControllerTest {
                 .disponibilidade(true)
                 .build();
 
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(List.of(impressoraFDM));
 
         mockMvc.perform(get("/api/busca/impressoras").param("tecnologia", "FDM"))
@@ -171,7 +169,7 @@ class BuscaControllerTest {
     @Test
     @DisplayName("Filtrar impressoras por tecnologia inexistente deve retornar lista vazia")
     void buscarImpressoras_filtroTecnologiaInexistente_retornaVazio() throws Exception {
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/busca/impressoras").param("tecnologia", "SLA"))
@@ -189,7 +187,7 @@ class BuscaControllerTest {
                 .disponibilidade(true)
                 .build();
 
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(List.of(impressoraSemMaterial));
 
         mockMvc.perform(get("/api/busca/impressoras"))

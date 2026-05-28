@@ -9,6 +9,7 @@ import com.printai.model.TecnologiaTipo;
 import com.printai.repository.Impressora3DRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,7 @@ public class Impressora3DService {
 
     private final Impressora3DRepository impressora3DRepository;
 
+    @Transactional(readOnly = true)
     public List<ImpressoraRespostaDTO> buscarImpressoras(BuscaServicoRequestDTO buscaDTO, Double lat, Double lon, Double raioKm) {
         List<Impressora3D> impressoras = impressora3DRepository.findAll();
 
