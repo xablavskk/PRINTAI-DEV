@@ -52,7 +52,7 @@ public class ServicoImpressaoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ServicoRespostaDTO> buscarServicos(BuscaServicoRequestDTO buscaDTO, Double lat, Double lon) {
+    public List<ServicoRespostaDTO> buscarServicos(BuscaServicoRequestDTO buscaDTO) {
         List<ServicoImpressao> servicos;
 
         if (buscaDTO.getBuscaSimplificada() != null && !buscaDTO.getBuscaSimplificada().isBlank()) {
@@ -66,32 +66,14 @@ public class ServicoImpressaoService {
                 servicos = repository.buscarSimplificado(pecasPequenas, decorativos, prototipos);
             }
         } else if (buscaDTO.getTecnologia() != null ||
-                   buscaDTO.getMaterial() != null ||
+                   (buscaDTO.getMaterial() != null && !buscaDTO.getMaterial().isBlank()) ||
                    (buscaDTO.getModelo() != null && !buscaDTO.getModelo().isBlank())) {
             servicos = repository.buscarAvancado(buscaDTO.getTecnologia(), buscaDTO.getMaterial(), buscaDTO.getModelo());
         } else {
             servicos = repository.findAll();
         }
 
-        return servicos.stream().map(s -> {
-            ServicoRespostaDTO dto = converterParaDTO(s);
-            if (lat != null && lon != null && s.getMaker() != null
-                    && s.getMaker().getLatitude() != null && s.getMaker().getLongitude() != null) {
-                double dist = calcularDistancia(lat, lon, s.getMaker().getLatitude(), s.getMaker().getLongitude());
-                dto.setDistanciaKm(Math.round(dist * 10.0) / 10.0);
-            }
-            return dto;
-        }).collect(Collectors.toList());
-    }
-
-    private double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {
-        double R = 6371;
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return servicos.stream().map(this::converterParaDTO).collect(Collectors.toList());
     }
 
     private ServicoRespostaDTO converterParaDTO(ServicoImpressao entidade) {
@@ -110,6 +92,7 @@ public class ServicoImpressaoService {
         }
 
         String volumeMaximo = "Não informado";
+        // volumeImpressao vem da impressora, não do serviço — evita lazy load
 
         List<TecnologiaTipo> tecnologias = entidade.getTipo() != null && entidade.getTipo().getTecnologias() != null
                 ? entidade.getTipo().getTecnologias().stream().map(Tecnologia::getNome).collect(Collectors.toList())
@@ -124,7 +107,7 @@ public class ServicoImpressaoService {
                 .tipoNome(entidade.getTipo() != null ? entidade.getTipo().getNome() : null)
                 .tipoDescricao(entidade.getTipo() != null ? entidade.getTipo().getDescricao() : null)
                 .tecnologias(tecnologias)
-                .material(entidade.getMaterial() != null ? entidade.getMaterial().getNome().name() : null)
+                .material(entidade.getMaterial())
                 .precoBase(entidade.getPrecoBase())
                 .maker(makerDTO)
                 .build();

@@ -14,12 +14,14 @@ const BuscaAvancada = ({ onSearch }) => {
   const [tipos, setTipos] = useState([]);
   const [materiais, setMateriais] = useState([]);
 
+  // Busca tipos e materiais do banco ao montar
   useEffect(() => {
     buscaService.listarTipos().then(setTipos).catch(() => setTipos([]));
     buscaService.listarMateriais().then(setMateriais).catch(() => setMateriais([]));
   }, []);
 
-  const tecnologiasDisponiveis = [...new Set(tipos.flatMap(t => t.tecnologias || []))];
+  // Tecnologias disponíveis: todas as tecnologias de todos os tipos
+  const tecnologiasDisponiveis = tipos.flatMap(t => t.tecnologias || []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,13 +30,14 @@ const BuscaAvancada = ({ onSearch }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    const params = {};
-
-    if (filtros.tecnologia) params.tecnologia = filtros.tecnologia;
-    if (filtros.material) params.material = filtros.material;
-    if (filtros.modelo) params.modelo = filtros.modelo;
-    if (filtros.volumeMaximo !== '') params.volumeMaximo = Number(filtros.volumeMaximo);
-
+    const params = { ...filtros };
+    if (params.volumeMaximo !== '') {
+      params.volumeMaximo = Number(params.volumeMaximo);
+    } else {
+      delete params.volumeMaximo;
+    }
+    // Remove campos vazios
+    Object.keys(params).forEach(k => params[k] === '' && delete params[k]);
     onSearch(params);
   };
 

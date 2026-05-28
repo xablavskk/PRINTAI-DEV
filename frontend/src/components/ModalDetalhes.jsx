@@ -4,14 +4,6 @@ import { X, Phone, MessageCircle, MapPin, Printer, ShieldCheck, Star, MessageSqu
 import { useDetalhesServico } from '../hooks/useBusca';
 import './ModalDetalhes.css';
 
-const formatarTelefone = (tel) => {
-  if (!tel) return 'Não informado';
-  const d = tel.replace(/\D/g, '');
-  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
-  if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
-  return tel;
-};
-
 const ModalDetalhes = ({ aberto, fechar, dados }) => {
   const { detalhes, loading, carregar } = useDetalhesServico(dados?.id);
 
@@ -77,7 +69,6 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
                   <strong>{info.maker?.nome}</strong> está em {info.maker?.cidade || 'São Paulo'}, {info.maker?.estado || 'SP'}.
                   <br />
                   <span style={{ fontSize: '0.9rem', color: 'var(--accent-color)' }}>
-                    {info.distanciaKm}
                     Aproximadamente {info.distanciaKm?.toFixed(1) || '2.5'}km de você.
                   </span>
                 </p>
@@ -157,7 +148,7 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
                 </button>
                 <button className="btn btn-outline" onClick={() => window.location.href = `tel:${info.maker?.telefone}`}>
                   <Phone size={20} />
-                  Ligar: {formatarTelefone(info.maker?.telefone)}
+                  Ligar: {info.maker?.telefone || 'Não informado'}
                 </button>
               </div>
             </>

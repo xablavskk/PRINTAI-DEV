@@ -4,7 +4,6 @@ import com.printai.dto.CadastroMakerRequestDTO;
 import com.printai.dto.CadastroMakerRespostaDTO;
 import com.printai.dto.ServicoImpressaoRequestDTO;
 import com.printai.model.*;
-import com.printai.repository.MaterialRepository;
 import com.printai.repository.ServicoImpressaoRepository;
 import com.printai.repository.TipoRepository;
 import com.printai.repository.UsuarioRepository;
@@ -24,15 +23,16 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final ServicoImpressaoRepository servicoImpressaoRepository;
     private final TipoRepository tipoRepository;
-    private final MaterialRepository materialRepository;
     private final GeocodificacaoService geocodificacaoService;
 
     @Transactional
     public CadastroMakerRespostaDTO cadastrarMaker(CadastroMakerRequestDTO dto) {
+        // Verifica e-mail duplicado
         if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("E-mail já cadastrado: " + dto.getEmail());
         }
 
+        // Geocodifica o endereço via Nominatim
         Double latitude = null;
         Double longitude = null;
 
@@ -53,6 +53,7 @@ public class UsuarioService {
             log.warn("Não foi possível geocodificar o endereço do Maker '{}'. Cadastro salvo sem coordenadas.", dto.getNome());
         }
 
+        // Monta entidade
         Endereco endereco = Endereco.builder()
                 .logradouro(dto.getLogradouro())
                 .numero(dto.getNumero())
@@ -67,7 +68,7 @@ public class UsuarioService {
         Usuario maker = Usuario.builder()
                 .nome(dto.getNome())
                 .email(dto.getEmail())
-                .senha(dto.getSenha())
+                .senha(dto.getSenha()) // TODO: hash com BCrypt antes de ir para produção
                 .telefone(dto.getTelefone())
                 .documentoCpfCnpj(dto.getDocumentoCpfCnpj())
                 .cidade(dto.getCidade())
@@ -76,11 +77,12 @@ public class UsuarioService {
                 .latitude(latitude)
                 .longitude(longitude)
                 .perfil(Perfil.MAKER)
-                .statusAprovacao(true) // aprovação automática por enquanto — UC de aprovação por admin será implementado separadamente
+                .statusAprovacao(true) // aprovação automática — UC de aprovação por admin não implementado ainda
                 .build();
 
         Usuario salvo = usuarioRepository.save(maker);
 
+        // Salva serviços opcionais
         int totalServicos = 0;
         if (dto.getServicos() != null && !dto.getServicos().isEmpty()) {
             List<ServicoImpressao> servicos = new ArrayList<>();
@@ -91,19 +93,14 @@ public class UsuarioService {
                             .orElseThrow(() -> new IllegalArgumentException("Tipo de impressão não encontrado: id=" + s.getTipoId()));
                 }
 
-                Material material = null;
-                if (s.getMaterialId() != null) {
-                    material = materialRepository.findById(s.getMaterialId())
-                            .orElseThrow(() -> new IllegalArgumentException("Material não encontrado: id=" + s.getMaterialId()));
-                }
-
                 servicos.add(ServicoImpressao.builder()
                         .nome(s.getNome())
                         .precoBase(s.getPrecoBase())
                         .descricao(s.getDescricao())
                         .condicoesServico(s.getCondicoesServico())
                         .tipo(tipo)
-                        .material(material)
+                        .tecnologia(s.getTecnologia())
+                        .material(s.getMaterial())
                         .suportaPecasPequenas(s.isSuportaPecasPequenas())
                         .suportaDecorativos(s.isSuportaDecorativos())
                         .suportaPrototipos(s.isSuportaPrototipos())
