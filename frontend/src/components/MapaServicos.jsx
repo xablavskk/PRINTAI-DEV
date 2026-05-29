@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { divIcon } from 'leaflet';
 import { Phone, ShieldCheck } from 'lucide-react';
 import ModalDetalhes from './ModalDetalhes';
+import ModalSolicitarPedido from './ModalSolicitarPedido';
 import { formatarTelefone } from '../utils/mascaras';
 import 'leaflet/dist/leaflet.css';
 import './ServiceMap.css';
@@ -14,9 +15,10 @@ const createCustomIcon = () => divIcon({
   iconAnchor: [12, 12],
 });
 
-const MapaServicos = ({ resultados = [] }) => {
+const MapaServicos = ({ resultados = [], cliente, setLoginAberto }) => {
   const [servicoSelecionado, setServicoSelecionado] = useState(null);
   const [modalAberto, setModalAberto] = useState(false);
+  const [pedidoAberto, setPedidoAberto] = useState(false);
   const defaultCenter = [ -23.0913052, -47.2180265];
 
   const makerMap = {};
@@ -34,6 +36,15 @@ const MapaServicos = ({ resultados = [] }) => {
     : defaultCenter;
 
   const customMarkerIcon = createCustomIcon();
+
+  const handleSolicitar = (s) => {
+    setServicoSelecionado(s);
+    if (!cliente) {
+      setLoginAberto(true);
+    } else {
+      setPedidoAberto(true);
+    }
+  };
 
   return (
     <>
@@ -65,16 +76,25 @@ const MapaServicos = ({ resultados = [] }) => {
                     <div key={s.id} style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.4rem', marginTop: '0.4rem' }}>
                       <div style={{ fontWeight: 'bold', fontSize: '0.85rem' }}>{s.nome}</div>
                       <span className="popup-tech">
-                        {s.tecnologias?.length > 0 ? s.tecnologias.join(', ') : s.tipoNome || 'N/A'}
+                        {s.tecnologias?.length > 0 ? [...new Set(s.tecnologias)].join(', ') : s.tipoNome || 'N/A'}
                         {s.material ? ` — ${s.material}` : ''}
                       </span>
-                      <button
-                        className="btn btn-primary"
-                        style={{ width: '100%', marginTop: '0.4rem', padding: '0.3rem' }}
-                        onClick={() => { setServicoSelecionado(s); setModalAberto(true); }}
-                      >
-                        Ver Detalhes
-                      </button>
+                      <div style={{ display: 'flex', gap: '4px', marginTop: '0.4rem' }}>
+                        <button
+                          className="btn btn-outline"
+                          style={{ flex: 1, padding: '0.3rem', fontSize: '0.75rem' }}
+                          onClick={() => { setServicoSelecionado(s); setModalAberto(true); }}
+                        >
+                          Detalhes
+                        </button>
+                        <button
+                          className="btn btn-primary"
+                          style={{ flex: 1, padding: '0.3rem', fontSize: '0.75rem' }}
+                          onClick={() => handleSolicitar(s)}
+                        >
+                          Solicitar Pedido
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -89,8 +109,16 @@ const MapaServicos = ({ resultados = [] }) => {
         fechar={() => setModalAberto(false)}
         dados={servicoSelecionado}
       />
+
+      <ModalSolicitarPedido
+        isOpen={pedidoAberto}
+        onClose={() => setPedidoAberto(false)}
+        servico={servicoSelecionado}
+        cliente={cliente}
+      />
     </>
   );
 };
 
 export default MapaServicos;
+

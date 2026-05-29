@@ -61,3 +61,42 @@ INSERT IGNORE INTO materiais (nome, descricao) VALUES
    'Fibra de Carbono (compósito). Filamento com fibras de carbono picadas ou contínuas. Altíssima rigidez e leveza. Usado em drones, peças estruturais e aplicações de engenharia avançada.'),
   ('RESINA',
    'Resina fotopolimerizável (padrão, ABS-like, flexível ou castable). Usada em impressoras SLA, DLP e MSLA. Alta resolução e acabamento liso. Indicada para miniaturas, joias, odontologia e moldes.');
+
+-- -------------------------------------------------------------
+-- USUÁRIOS DE TESTE (Clientes e Makers)
+-- -------------------------------------------------------------
+
+-- Cliente de Teste
+-- Senha em texto plano: senha123
+INSERT IGNORE INTO usuarios (id, nome, email, senha, telefone, cidade, estado, perfil, status_aprovacao, documento_cpf_cnpj) VALUES
+  (10, 'João Cliente', 'cliente@printai.com', 'senha123', '19988880000', 'Indaiatuba', 'SP', 'CLIENTE', true, '11122233344');
+
+-- Makers de Teste
+-- Senhas em texto plano: senha123
+INSERT IGNORE INTO usuarios (id, nome, email, senha, telefone, cidade, estado, perfil, status_aprovacao, documento_cpf_cnpj, latitude, longitude) VALUES
+  (11, 'Mario Henrique Maker', 'maker@printai.com', 'senha123', '19977770000', 'Indaiatuba', 'SP', 'MAKER', true, '22233344455', -23.0913052, -47.2180265),
+  (12, 'Ana Resinas Pro', 'ana@printai.com', 'senha123', '19966660000', 'Campinas', 'SP', 'MAKER', true, '33344455566', -22.9099384, -47.0626332);
+
+-- -------------------------------------------------------------
+-- SERVIÇOS DE IMPRESSÃO DE TESTE
+-- -------------------------------------------------------------
+INSERT IGNORE INTO servicos_impressao (id, nome, preco_base, descricao, condicoes_servico, tipo_id, tecnologia, material_id, maker_id, suporta_pecas_pequenas, suporta_decorativos, suporta_prototipos) VALUES
+  (10, 
+   'Impressão FDM de Alta Precisão', 
+   15.50, 
+   'Ofereço serviços de impressão 3D por filamento (FDM) com excelente qualidade. Ótimo custo-benefício para protótipos rápidos, suportes, organizadores e peças mecânicas em geral.', 
+   'Preço calculado por hora de impressão + gramas de filamento. Envie seu arquivo STL ou OBJ para orçamento.',
+   (SELECT id FROM tipos WHERE nome = 'Filamento'),
+   'FDM',
+   (SELECT id FROM materiais WHERE nome = 'PLA'),
+   11, true, true, true),
+
+  (11, 
+   'Impressão em Resina SLA Alta Resolução', 
+   25.00, 
+   'Serviço especializado em peças ricas em detalhes utilizando impressora 3D de resina. Altíssima fidelidade e qualidade de acabamento para miniaturas de RPG, próteses dentárias, joias e peças decorativas complexas.', 
+   'O valor inicial cobre a configuração do lote. O valor final varia pelo volume da peça em ml. Necessário pós-cura UV.',
+   (SELECT id FROM tipos WHERE nome = 'Resina'),
+   'SLA',
+   (SELECT id FROM materiais WHERE nome = 'RESINA'),
+   12, true, true, false);

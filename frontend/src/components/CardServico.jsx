@@ -1,10 +1,21 @@
 import React, { useState } from 'react';
 import { Printer, User, Wrench, Package } from 'lucide-react';
 import ModalDetalhes from './ModalDetalhes';
+import ModalSolicitarPedido from './ModalSolicitarPedido';
 import './ServiceList.css';
 
-const CardServico = ({ resultado }) => {
+const CardServico = ({ resultado, cliente, setLoginAberto }) => {
   const [modalAberto, setModalAberto] = useState(false);
+  const [pedidoAberto, setPedidoAberto] = useState(false);
+
+  const handleSolicitar = (e) => {
+    e.stopPropagation();
+    if (!cliente) {
+      setLoginAberto(true);
+    } else {
+      setPedidoAberto(true);
+    }
+  };
 
   return (
     <>
@@ -31,7 +42,7 @@ const CardServico = ({ resultado }) => {
         <div className="capabilities-group">
           <div className="capability-tag">
             <Wrench size={14} />
-            <span>{resultado.tecnologias?.length > 0 ? resultado.tecnologias.join(', ') : resultado.tipoNome || 'N/A'}</span>
+            <span>{resultado.tecnologias?.length > 0 ? [...new Set(resultado.tecnologias)].join(', ') : resultado.tipoNome || 'N/A'}</span>
           </div>
           <div className="capability-tag">
             <Package size={14} />
@@ -45,12 +56,18 @@ const CardServico = ({ resultado }) => {
           )}
         </div>
         
-        <div className="service-actions">
+        <div className="service-actions" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
           <button 
-            className="btn btn-primary w-full"
+            className="btn btn-outline"
             onClick={() => setModalAberto(true)}
           >
-            Ver Perfil e Orçamento
+            Ver Perfil
+          </button>
+          <button 
+            className="btn btn-primary"
+            onClick={handleSolicitar}
+          >
+            Solicitar Pedido
           </button>
         </div>
       </div>
@@ -60,8 +77,16 @@ const CardServico = ({ resultado }) => {
         fechar={() => setModalAberto(false)} 
         dados={resultado} 
       />
+
+      <ModalSolicitarPedido
+        isOpen={pedidoAberto}
+        onClose={() => setPedidoAberto(false)}
+        servico={resultado}
+        cliente={cliente}
+      />
     </>
   );
 };
 
 export default CardServico;
+

@@ -7,7 +7,7 @@ import MapaServicos from '../components/MapaServicos';
 import { useBusca } from '../hooks/useBusca';
 import './BuscaServicos.css';
 
-const BuscaServicos = () => {
+const BuscaServicos = ({ cliente, setLoginAberto }) => {
   const [abaAtiva, setAbaAtiva] = useState('simplified');
   const [jaBuscou, setJaBuscou] = useState(false);
   const { resultados, loading, buscar } = useBusca();
@@ -51,10 +51,10 @@ const BuscaServicos = () => {
               <div className="results-info">
                 <span>{resultados.length} Makers encontrados</span>
               </div>
-              <ListaServicos resultados={resultados} carregando={loading} />
+              <ListaServicos resultados={resultados} carregando={loading} cliente={cliente} setLoginAberto={setLoginAberto} />
             </div>
             <div className="map-column">
-              <MapaServicos resultados={resultados} />
+              <MapaServicos resultados={resultados} cliente={cliente} setLoginAberto={setLoginAberto} />
             </div>
           </div>
         </div>
@@ -62,5 +62,6 @@ const BuscaServicos = () => {
     </div>
   );
 };
+
 
 export default BuscaServicos;

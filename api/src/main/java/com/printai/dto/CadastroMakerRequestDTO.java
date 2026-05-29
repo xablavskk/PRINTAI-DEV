@@ -26,7 +26,6 @@ public class CadastroMakerRequestDTO {
     @NotBlank(message = "CPF ou CNPJ é obrigatório")
     private String documentoCpfCnpj;
 
-    // Endereço para geocodificação via Nominatim
     @NotBlank(message = "Logradouro é obrigatório")
     private String logradouro;
 
@@ -46,6 +45,5 @@ public class CadastroMakerRequestDTO {
 
     private String pais = "Brasil";
 
-    // Serviços de impressão iniciais (opcional)
     private java.util.List<ServicoImpressaoRequestDTO> servicos;
 }
