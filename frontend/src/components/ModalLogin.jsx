@@ -88,10 +88,7 @@ export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
 
         <div className="auth-footer">
           <span>Não tem uma conta de cliente? </span>
-          <a href="/cadastro-cliente" onClick={(e) => {
-            // Em uma SPA simples, se for apenas redirecionamento de rota, ou lidar com state
-            // Para garantir que o usuário chegue na página de cadastro de cliente, mantemos padrão:
-          }}>
+          <a href="/cliente/cadastro" onClick={(e) => {}}>
             Cadastre-se aqui
           </a>
         </div>

@@ -118,14 +118,14 @@ export default function ModalSolicitarPedido({ isOpen, onClose, servico, cliente
               className={tipoPedido === 'COM_MODELO' ? 'active' : ''}
               onClick={() => setTipoPedido('COM_MODELO')}
             >
-              🚀 Tenho modelo 3D pronto
+              Tenho modelo 3D pronto
             </button>
             <button
               type="button"
               className={tipoPedido === 'SEM_MODELO' ? 'active' : ''}
               onClick={() => setTipoPedido('SEM_MODELO')}
             >
-              💡 Não tenho modelo pronto
+              Não tenho modelo pronto
             </button>
           </div>
 
