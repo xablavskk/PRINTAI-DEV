@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -30,6 +31,25 @@ public class GlobalExceptionHandler {
                 .body(Map.of("erro", ex.getMessage()));
     }
 
+    // Regras de negócio customizadas
+    @ExceptionHandler(RegraNegocioException.class)
+    public ResponseEntity<Map<String, String>> handleRegraNegocio(RegraNegocioException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("erro", ex.getMessage()));
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<Map<String, String>> handleMissingHeader(MissingRequestHeaderException ex) {
+        String mensagem = "Header obrigatório ausente: " + ex.getHeaderName();
+
+        if ("X-Cliente-Id".equals(ex.getHeaderName())) {
+            mensagem = "Usuário não autenticado. Identificador do cliente (X-Cliente-Id) ausente.";
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("erro", mensagem));
+    }
+
     // Erros genéricos
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGenericError(Exception ex) {
@@ -37,3 +57,4 @@ public class GlobalExceptionHandler {
                 .body(Map.of("erro", "Erro interno. Tente novamente mais tarde."));
     }
 }
+

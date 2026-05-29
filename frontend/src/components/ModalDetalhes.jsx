@@ -94,7 +94,7 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
                     <span>Tecnologia:</span>
                     <strong>
                       {info.tecnologias?.length > 0
-                        ? info.tecnologias.join(', ')
+                        ? [...new Set(info.tecnologias)].join(', ')
                         : info.tecnologia || 'Não informado'}
                     </strong>
                   </div>
