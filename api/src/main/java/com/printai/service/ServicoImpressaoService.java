@@ -71,7 +71,7 @@ public class ServicoImpressaoService {
             if (buscaDTO.getMaterial() != null && !buscaDTO.getMaterial().isBlank()) {
                 try {
                     materialTipo = MaterialTipo.valueOf(buscaDTO.getMaterial().trim().toUpperCase());
-                } catch (IllegalArgumentException _) {
+                } catch (IllegalArgumentException ignored) {
                 }
             }
             servicos = repository.buscarAvancado(buscaDTO.getTecnologia(), materialTipo, buscaDTO.getModelo());
