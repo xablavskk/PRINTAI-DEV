@@ -80,7 +80,7 @@ export default function ModalMeusPedidos({ isOpen, onClose, cliente }) {
                       <span className="pedido-num">Pedido #{p.id}</span>
                       <span className="pedido-date">{formatarData(p.dataPedido)}</span>
                     </div>
-                    <span className={`status-badge-pill ${p.status.toLowerCase()}`}>
+                    <span className={`status-badge-pill ${p.status?.toLowerCase() ?? 'desconhecido'}`}>
                       {formatarStatus(p.status)}
                     </span>
                   </div>

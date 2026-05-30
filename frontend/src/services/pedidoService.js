@@ -1,8 +1,8 @@
-import api from './api';
+import apiClient from '../api/client';
 
 export const pedidoService = {
   solicitarPedido: async (clienteId, dados) => {
-    const response = await api.post('/pedidos', dados, {
+    const response = await apiClient.post('/pedidos', dados, {
       headers: {
         'X-Cliente-Id': clienteId
       }
@@ -11,7 +11,7 @@ export const pedidoService = {
   },
 
   listarPedidos: async (clienteId) => {
-    const response = await api.get('/pedidos', {
+    const response = await apiClient.get('/pedidos', {
       headers: {
         'X-Cliente-Id': clienteId
       }
