@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './ModalLogin.css';
 
 export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
@@ -7,6 +7,7 @@ export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
@@ -89,9 +90,13 @@ export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
 
         <div className="auth-footer">
           <span>Não tem uma conta de cliente? </span>
-          <Link to="/cliente/cadastro" onClick={onClose}>
+          <button
+            type="button"
+            className="link-btn"
+            onClick={() => { onClose(); navigate('/cliente/cadastro'); }}
+          >
             Cadastre-se aqui
-          </Link>
+          </button>
         </div>
       </div>
     </div>

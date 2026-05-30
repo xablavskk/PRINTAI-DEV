@@ -118,3 +118,18 @@
 .auth-footer a:hover {
   opacity: 0.8;
 }
+
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent-color);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.link-btn:hover {
+  opacity: 0.8;
+}
