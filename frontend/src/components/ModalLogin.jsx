@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './ModalLogin.css';
 
 export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
@@ -88,9 +89,9 @@ export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
 
         <div className="auth-footer">
           <span>Não tem uma conta de cliente? </span>
-          <a href="/cliente/cadastro" onClick={(e) => {}}>
+          <Link to="/cliente/cadastro" onClick={onClose}>
             Cadastre-se aqui
-          </a>
+          </Link>
         </div>
       </div>
     </div>
