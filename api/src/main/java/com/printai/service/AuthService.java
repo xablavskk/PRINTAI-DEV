@@ -19,7 +19,6 @@ public class AuthService {
         Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RegraNegocioException("E-mail ou senha incorretos"));
 
-        // Comparação de senha em plaintext para simplicidade acadêmica do projeto atual
         if (!usuario.getSenha().equals(dto.getSenha())) {
             throw new RegraNegocioException("E-mail ou senha incorretos");
         }

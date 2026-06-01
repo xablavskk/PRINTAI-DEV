@@ -31,12 +31,10 @@ public class UsuarioService {
 
     @Transactional
     public CadastroMakerRespostaDTO cadastrarMaker(CadastroMakerRequestDTO dto) {
-        // Verifica e-mail duplicado
         if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("E-mail já cadastrado: " + dto.getEmail());
         }
 
-        // Geocodifica o endereço via Nominatim
         Double latitude = null;
         Double longitude = null;
 
@@ -57,7 +55,6 @@ public class UsuarioService {
             log.warn("Não foi possível geocodificar o endereço do Maker '{}'. Cadastro salvo sem coordenadas.", dto.getNome());
         }
 
-        // Monta entidade
         Endereco endereco = Endereco.builder()
                 .logradouro(dto.getLogradouro())
                 .numero(dto.getNumero())
@@ -72,7 +69,7 @@ public class UsuarioService {
         Usuario maker = Usuario.builder()
                 .nome(dto.getNome())
                 .email(dto.getEmail())
-                .senha(dto.getSenha()) // TODO: hash com BCrypt antes de ir para produção
+                .senha(dto.getSenha()) 
                 .telefone(dto.getTelefone())
                 .documentoCpfCnpj(dto.getDocumentoCpfCnpj())
                 .cidade(dto.getCidade())
@@ -81,12 +78,11 @@ public class UsuarioService {
                 .latitude(latitude)
                 .longitude(longitude)
                 .perfil(Perfil.MAKER)
-                .statusAprovacao(true) // aprovação automática — UC de aprovação por admin não implementado ainda
+                .statusAprovacao(true)
                 .build();
 
         Usuario salvo = usuarioRepository.save(maker);
 
-        // Salva serviços opcionais
         int totalServicos = 0;
         if (dto.getServicos() != null && !dto.getServicos().isEmpty()) {
             List<ServicoImpressao> servicos = new ArrayList<>();
@@ -184,7 +180,7 @@ public class UsuarioService {
         Usuario cliente = Usuario.builder()
                 .nome(dto.getNome())
                 .email(dto.getEmail())
-                .senha(dto.getSenha()) // TODO: hash com BCrypt
+                .senha(dto.getSenha())
                 .telefone(dto.getTelefone())
                 .cidade(dto.getCidade())
                 .estado(dto.getEstado())

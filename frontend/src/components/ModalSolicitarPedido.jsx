@@ -3,13 +3,13 @@ import './ModalSolicitarPedido.css';
 import { pedidoService } from '../services/pedidoService';
 
 export default function ModalSolicitarPedido({ isOpen, onClose, servico, cliente }) {
-  const [tipoPedido, setTipoPedido] = useState('COM_MODELO'); // COM_MODELO ou SEM_MODELO
+  const [tipoPedido, setTipoPedido] = useState('COM_MODELO');
   const [arquivo3D, setArquivo3D] = useState('');
   const [descricaoNecessidade, setDescricaoNecessidade] = useState('');
   const [material, setMaterial] = useState('');
   const [quantidade, setQuantidade] = useState(1);
   const [observacoes, setObservacoes] = useState('');
-  
+
   const [loading, setLoading] = useState(false);
   const [sucesso, setSucesso] = useState(null);
   const [erro, setErro] = useState('');
@@ -78,7 +78,7 @@ export default function ModalSolicitarPedido({ isOpen, onClose, servico, cliente
           </div>
           <h2>Pedido Solicitado!</h2>
           <p className="success-msg">{sucesso.mensagem}</p>
-          
+
           <div className="summary-box">
             <div><span>Número do Pedido:</span> <strong>#{sucesso.id}</strong></div>
             <div><span>Serviço:</span> <strong>{sucesso.servicoNome}</strong></div>

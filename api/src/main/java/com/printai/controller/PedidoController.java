@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/pedidos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class PedidoController {
 
     private final PedidoService pedidoService;
@@ -24,7 +23,7 @@ public class PedidoController {
             @RequestBody @Valid PedidoRequestDTO dto) {
         
         if (clienteId == null) {
-            throw new IllegalArgumentException("Usuário não autenticado. Identificador do cliente (X-Cliente-Id) ausente.");
+            throw new RegraNegocioException("Usuário não autenticado. Identificador do cliente (X-Cliente-Id) ausente.");
         }
 
         PedidoRespostaDTO resposta = pedidoService.criarPedido(clienteId, dto);
@@ -36,7 +35,7 @@ public class PedidoController {
             @RequestHeader(value = "X-Cliente-Id", required = false) Long clienteId) {
         
         if (clienteId == null) {
-            throw new IllegalArgumentException("Usuário não autenticado. Identificador do cliente (X-Cliente-Id) ausente.");
+            throw new RegraNegocioException("Usuário não autenticado. Identificador do cliente (X-Cliente-Id) ausente.");
         }
 
         java.util.List<PedidoRespostaDTO> pedidos = pedidoService.listarPedidosCliente(clienteId);

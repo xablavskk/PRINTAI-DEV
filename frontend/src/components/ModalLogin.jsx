@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService';
 import './ModalLogin.css';
 
 export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
@@ -6,6 +8,7 @@ export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
@@ -15,25 +18,12 @@ export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, senha }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.erro || 'Erro ao realizar login');
-      }
-
-      localStorage.setItem('printai_cliente', JSON.stringify(data));
-      onLoginSuccess(data);
+      const dados = await authService.login(email, senha);
+      authService.salvarSessao(dados);
+      onLoginSuccess(dados);
       onClose();
     } catch (err) {
-      setErro(err.message);
+      setErro(err.response?.data?.erro || err.message || 'Erro ao realizar login');
     } finally {
       setLoading(false);
     }
@@ -88,9 +78,13 @@ export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
 
         <div className="auth-footer">
           <span>Não tem uma conta de cliente? </span>
-          <a href="/cliente/cadastro" onClick={(e) => {}}>
+          <button
+            type="button"
+            className="link-btn"
+            onClick={() => { onClose(); navigate('/cliente/cadastro'); }}
+          >
             Cadastre-se aqui
-          </a>
+          </button>
         </div>
       </div>
     </div>

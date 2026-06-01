@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { User, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import { useCadastroCliente } from '../hooks/useCadastroCliente';
-import './CadastroMaker.css'; // reutiliza os mesmos estilos
+import './CadastroMaker.css';
 
-const UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',
-             'PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+const UFS = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
+  'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 
 const CadastroCliente = () => {
   const { form, loading, erros, sucesso, erroGeral, handleChange, handleSubmit } = useCadastroCliente();
