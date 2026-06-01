@@ -14,6 +14,7 @@ public class PedidoRespostaDTO {
     private TipoPedido tipoPedido;
     private Date dataPedido;
     private String servicoNome;
+    private Long makerId;
     private String makerNome;
     private String mensagem;
 }

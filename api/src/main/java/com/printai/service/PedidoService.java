@@ -78,6 +78,7 @@ public class PedidoService {
                         .tipoPedido(pedido.getTipoPedido())
                         .dataPedido(pedido.getDataPedido())
                         .servicoNome(pedido.getServico() != null ? pedido.getServico().getNome() : "N/A")
+                        .makerId(pedido.getServico() != null && pedido.getServico().getMaker() != null ? pedido.getServico().getMaker().getId() : null)
                         .makerNome(pedido.getServico() != null && pedido.getServico().getMaker() != null ? pedido.getServico().getMaker().getNome() : "N/A")
                         .build())
                 .collect(java.util.stream.Collectors.toList());
