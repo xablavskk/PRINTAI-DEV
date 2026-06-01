@@ -33,12 +33,12 @@
   padding-bottom: 0;
 }
 
-.tab-btn {
+.dashboard-tabs .tab-btn {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 0.65rem 1.2rem;
-  background: none;
+  background: none !important;
   border: none;
   border-bottom: 2px solid transparent;
   color: var(--text-secondary);
@@ -47,10 +47,18 @@
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: -1px;
+  flex: unset;
+  border-radius: 0;
+  box-shadow: none !important;
 }
 
-.tab-btn:hover { color: var(--text-primary); }
-.tab-btn.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
+.dashboard-tabs .tab-btn:hover { color: var(--text-primary); }
+.dashboard-tabs .tab-btn.active {
+  background: none !important;
+  color: var(--accent-color) !important;
+  border-bottom-color: var(--accent-color);
+  box-shadow: none !important;
+}
 
 .tab-badge {
   background: var(--accent-color);
