@@ -54,6 +54,12 @@ export const makerService = {
     await apiClient.delete(`/maker/servicos/${servicoId}`, { headers: headers(makerId) });
   },
 
+  // Avaliações
+  async listarAvaliacoes(makerId) {
+    const { data } = await apiClient.get('/maker/avaliacoes', { headers: headers(makerId) });
+    return data;
+  },
+
   // Impressoras
   async listarImpressoras(makerId) {
     const { data } = await apiClient.get('/maker/impressoras', { headers: headers(makerId) });

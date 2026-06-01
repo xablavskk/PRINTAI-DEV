@@ -19,6 +19,7 @@ public class MakerService {
     private final ServicoImpressaoRepository servicoRepository;
     private final TipoRepository tipoRepository;
     private final MaterialRepository materialRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
 
     // -------------------------------------------------------------------------
     // Pedidos
@@ -47,6 +48,24 @@ public class MakerService {
 
         pedido.setStatus(dto.getStatus());
         return toRespostaMaker(pedidoRepository.save(pedido));
+    }
+
+    // -------------------------------------------------------------------------
+    // Avaliações
+    // -------------------------------------------------------------------------
+
+    @Transactional(readOnly = true)
+    public List<AvaliacaoDTO> listarAvaliacoes(Long makerId) {
+        validarMaker(makerId);
+        return avaliacaoRepository.findByMaker_Id(makerId).stream()
+                .map(a -> AvaliacaoDTO.builder()
+                        .id(a.getId())
+                        .clienteNome(a.getCliente().getNome())
+                        .nota(a.getNota())
+                        .comentario(a.getComentario())
+                        .dataAvaliacao(a.getDataAvaliacao())
+                        .build())
+                .toList();
     }
 
     // -------------------------------------------------------------------------

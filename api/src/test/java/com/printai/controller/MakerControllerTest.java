@@ -421,4 +421,44 @@ class MakerControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.erro").value("Serviço não encontrado ou não pertence a este Maker"));
     }
+
+    // ── GET /api/maker/avaliacoes ──────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Listar avaliações com header válido deve retornar 200 com lista")
+    void listarAvaliacoes_headerValido_retorna200() throws Exception {
+        AvaliacaoDTO avaliacao = AvaliacaoDTO.builder()
+                .id(1L).clienteNome("Ana Cliente").nota(5)
+                .comentario("Excelente serviço!").dataAvaliacao(new Date())
+                .build();
+        when(makerService.listarAvaliacoes(1L)).thenReturn(List.of(avaliacao));
+
+        mockMvc.perform(get("/api/maker/avaliacoes")
+                        .header("X-Maker-Id", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nota").value(5))
+                .andExpect(jsonPath("$[0].clienteNome").value("Ana Cliente"))
+                .andExpect(jsonPath("$[0].comentario").value("Excelente serviço!"));
+    }
+
+    @Test
+    @DisplayName("Listar avaliações sem header X-Maker-Id deve retornar 400")
+    void listarAvaliacoes_semHeader_retorna400() throws Exception {
+        mockMvc.perform(get("/api/maker/avaliacoes"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Listar avaliações com maker inexistente deve retornar 400")
+    void listarAvaliacoes_makerNaoEncontrado_retorna400() throws Exception {
+        when(makerService.listarAvaliacoes(99L))
+                .thenThrow(new RegraNegocioException("Maker não encontrado"));
+
+        mockMvc.perform(get("/api/maker/avaliacoes")
+                        .header("X-Maker-Id", "99"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").value("Maker não encontrado"));
+    }
 }
