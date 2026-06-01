@@ -5,6 +5,7 @@ import com.printai.dto.AvaliacaoRespostaDTO;
 import com.printai.exception.RegraNegocioException;
 import com.printai.model.AvaliacaoMaker;
 import com.printai.model.Perfil;
+import com.printai.model.StatusPedido;
 import com.printai.model.Usuario;
 import com.printai.repository.AvaliacaoRepository;
 import com.printai.repository.PedidoRepository;
@@ -59,7 +60,7 @@ class AvaliacaoServiceTest {
     void criarAvaliacao_valida_salvaERetorna() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(clientePadrao));
         when(usuarioRepository.findById(2L)).thenReturn(Optional.of(makerPadrao));
-        when(pedidoRepository.existsByCliente_IdAndServico_Maker_IdAndStatus(1L, 2L, "FINALIZADO"))
+        when(pedidoRepository.existsByCliente_IdAndServico_Maker_IdAndStatus(1L, 2L, StatusPedido.FINALIZADO))
                 .thenReturn(true);
         when(avaliacaoRepository.existsByCliente_IdAndMaker_Id(1L, 2L)).thenReturn(false);
         when(avaliacaoRepository.save(any(AvaliacaoMaker.class))).thenAnswer(inv -> {
@@ -119,7 +120,7 @@ class AvaliacaoServiceTest {
     void criarAvaliacao_semPedidoFinalizado_lancaExcecao() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(clientePadrao));
         when(usuarioRepository.findById(2L)).thenReturn(Optional.of(makerPadrao));
-        when(pedidoRepository.existsByCliente_IdAndServico_Maker_IdAndStatus(1L, 2L, "FINALIZADO"))
+        when(pedidoRepository.existsByCliente_IdAndServico_Maker_IdAndStatus(1L, 2L, StatusPedido.FINALIZADO))
                 .thenReturn(false);
 
         assertThatThrownBy(() -> avaliacaoService.criarAvaliacao(1L, dtoPadrao))
@@ -132,7 +133,7 @@ class AvaliacaoServiceTest {
     void criarAvaliacao_duplicada_lancaExcecao() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(clientePadrao));
         when(usuarioRepository.findById(2L)).thenReturn(Optional.of(makerPadrao));
-        when(pedidoRepository.existsByCliente_IdAndServico_Maker_IdAndStatus(1L, 2L, "FINALIZADO"))
+        when(pedidoRepository.existsByCliente_IdAndServico_Maker_IdAndStatus(1L, 2L, StatusPedido.FINALIZADO))
                 .thenReturn(true);
         when(avaliacaoRepository.existsByCliente_IdAndMaker_Id(1L, 2L)).thenReturn(true);
 

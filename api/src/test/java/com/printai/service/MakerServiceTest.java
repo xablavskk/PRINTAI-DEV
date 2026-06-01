@@ -3,6 +3,7 @@ package com.printai.service;
 import com.printai.dto.*;
 import com.printai.exception.RegraNegocioException;
 import com.printai.model.*;
+import com.printai.model.StatusPedido;
 import com.printai.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,7 +57,7 @@ class MakerServiceTest {
                 .build();
 
         pedidoPadrao = Pedido.builder()
-                .id(100L).status("AGUARDANDO_ANALISE")
+                .id(100L).status(StatusPedido.AGUARDANDO_ANALISE)
                 .tipoPedido(TipoPedido.SEM_MODELO)
                 .descricaoNecessidade("Peça de reposição").quantidade(1)
                 .dataPedido(new Date())
@@ -87,12 +88,12 @@ class MakerServiceTest {
     @DisplayName("listarPedidos com filtro de status deve usar repositório filtrado")
     void listarPedidos_comFiltroStatus_usaRepositorioFiltrado() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(makerPadrao));
-        when(pedidoRepository.findByServico_Maker_IdAndStatus(1L, "APROVADO")).thenReturn(List.of());
+        when(pedidoRepository.findByServico_Maker_IdAndStatus(1L, StatusPedido.APROVADO)).thenReturn(List.of());
 
         List<PedidoMakerRespostaDTO> resultado = makerService.listarPedidos(1L, "APROVADO");
 
         assertThat(resultado).isEmpty();
-        verify(pedidoRepository).findByServico_Maker_IdAndStatus(1L, "APROVADO");
+        verify(pedidoRepository).findByServico_Maker_IdAndStatus(1L, StatusPedido.APROVADO);
         verify(pedidoRepository, never()).findByServico_Maker_Id(any());
     }
 
@@ -134,13 +135,13 @@ class MakerServiceTest {
         PedidoMakerRespostaDTO resultado = makerService.atualizarStatusPedido(1L, 100L, dto);
 
         assertThat(resultado.getStatus()).isEqualTo("APROVADO");
-        verify(pedidoRepository).save(argThat(p -> "APROVADO".equals(p.getStatus())));
+        verify(pedidoRepository).save(argThat(p -> StatusPedido.APROVADO == p.getStatus()));
     }
 
     @Test
     @DisplayName("atualizarStatusPedido em pedido FINALIZADO deve lançar RegraNegocioException")
     void atualizarStatusPedido_pedidoFinalizado_lancaExcecao() {
-        pedidoPadrao.setStatus("FINALIZADO");
+        pedidoPadrao.setStatus(StatusPedido.FINALIZADO);
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(makerPadrao));
         when(pedidoRepository.findByIdAndServico_Maker_Id(100L, 1L)).thenReturn(Optional.of(pedidoPadrao));
 

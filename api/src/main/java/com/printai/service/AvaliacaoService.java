@@ -5,6 +5,7 @@ import com.printai.dto.AvaliacaoRespostaDTO;
 import com.printai.exception.RegraNegocioException;
 import com.printai.model.AvaliacaoMaker;
 import com.printai.model.Perfil;
+import com.printai.model.StatusPedido;
 import com.printai.model.Usuario;
 import com.printai.repository.AvaliacaoRepository;
 import com.printai.repository.PedidoRepository;
@@ -36,7 +37,7 @@ public class AvaliacaoService {
         }
 
         boolean temPedidoFinalizado = pedidoRepository
-                .existsByCliente_IdAndServico_Maker_IdAndStatus(clienteId, dto.getMakerId(), "FINALIZADO");
+                .existsByCliente_IdAndServico_Maker_IdAndStatus(clienteId, dto.getMakerId(), StatusPedido.FINALIZADO);
         if (!temPedidoFinalizado) {
             throw new RegraNegocioException("Você só pode avaliar um Maker após finalizar um pedido com ele");
         }

@@ -20,8 +20,9 @@ public class Pedido {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataPedido;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private StatusPedido status;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_pedido", nullable = false)

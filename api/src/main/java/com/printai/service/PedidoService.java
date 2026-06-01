@@ -6,6 +6,7 @@ import com.printai.exception.RegraNegocioException;
 import com.printai.model.Pedido;
 import com.printai.model.Perfil;
 import com.printai.model.ServicoImpressao;
+import com.printai.model.StatusPedido;
 import com.printai.model.Usuario;
 import com.printai.repository.PedidoRepository;
 import com.printai.repository.ServicoImpressaoRepository;
@@ -46,14 +47,14 @@ public class PedidoService {
                 .quantidade(dto.getQuantidade())
                 .observacoes(dto.getObservacoes())
                 .dataPedido(new Date())
-                .status("AGUARDANDO_ANALISE")
+                .status(StatusPedido.AGUARDANDO_ANALISE)
                 .build();
 
         pedido = pedidoRepository.save(pedido);
 
         return PedidoRespostaDTO.builder()
                 .id(pedido.getId())
-                .status(pedido.getStatus())
+                .status(pedido.getStatus() != null ? pedido.getStatus().name() : null)
                 .tipoPedido(pedido.getTipoPedido())
                 .dataPedido(pedido.getDataPedido())
                 .servicoNome(servico.getNome())
@@ -74,7 +75,7 @@ public class PedidoService {
         return pedidoRepository.findByCliente_Id(clienteId).stream()
                 .map(pedido -> PedidoRespostaDTO.builder()
                         .id(pedido.getId())
-                        .status(pedido.getStatus())
+                        .status(pedido.getStatus() != null ? pedido.getStatus().name() : null)
                         .tipoPedido(pedido.getTipoPedido())
                         .dataPedido(pedido.getDataPedido())
                         .servicoNome(pedido.getServico() != null ? pedido.getServico().getNome() : "N/A")

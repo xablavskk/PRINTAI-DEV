@@ -29,7 +29,7 @@ public class MakerService {
     public List<PedidoMakerRespostaDTO> listarPedidos(Long makerId, String status) {
         validarMaker(makerId);
         List<Pedido> pedidos = (status != null && !status.isBlank())
-                ? pedidoRepository.findByServico_Maker_IdAndStatus(makerId, status)
+                ? pedidoRepository.findByServico_Maker_IdAndStatus(makerId, StatusPedido.valueOf(status))
                 : pedidoRepository.findByServico_Maker_Id(makerId);
 
         return pedidos.stream().map(this::toRespostaMaker).toList();
@@ -42,11 +42,11 @@ public class MakerService {
         Pedido pedido = pedidoRepository.findByIdAndServico_Maker_Id(pedidoId, makerId)
                 .orElseThrow(() -> new RegraNegocioException("Pedido não encontrado ou não pertence a este Maker"));
 
-        if ("FINALIZADO".equals(pedido.getStatus())) {
+        if (StatusPedido.FINALIZADO == pedido.getStatus()) {
             throw new RegraNegocioException("Pedido já finalizado não pode ser alterado");
         }
 
-        pedido.setStatus(dto.getStatus());
+        pedido.setStatus(StatusPedido.valueOf(dto.getStatus()));
         return toRespostaMaker(pedidoRepository.save(pedido));
     }
 
@@ -167,7 +167,7 @@ public class MakerService {
     private PedidoMakerRespostaDTO toRespostaMaker(Pedido p) {
         return PedidoMakerRespostaDTO.builder()
                 .id(p.getId())
-                .status(p.getStatus())
+                .status(p.getStatus() != null ? p.getStatus().name() : null)
                 .tipoPedido(p.getTipoPedido() != null ? p.getTipoPedido().name() : null)
                 .dataPedido(p.getDataPedido())
                 .clienteNome(p.getCliente().getNome())
