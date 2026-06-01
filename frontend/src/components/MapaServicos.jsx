@@ -87,13 +87,19 @@ const MapaServicos = ({ resultados = [], cliente, setLoginAberto }) => {
                         >
                           Detalhes
                         </button>
-                        <button
-                          className="btn btn-primary"
-                          style={{ flex: 1, padding: '0.3rem', fontSize: '0.75rem' }}
-                          onClick={() => handleSolicitar(s)}
-                        >
-                          Solicitar Pedido
-                        </button>
+                        {cliente && cliente.id === s.maker?.id ? (
+                          <span style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', color: 'var(--accent-color)', fontWeight: '600', border: '1px solid var(--accent-color)', borderRadius: '6px', padding: '0.3rem' }}>
+                            Meu serviço
+                          </span>
+                        ) : (
+                          <button
+                            className="btn btn-primary"
+                            style={{ flex: 1, padding: '0.3rem', fontSize: '0.75rem' }}
+                            onClick={() => handleSolicitar(s)}
+                          >
+                            Solicitar Pedido
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ServicoImpressaoRepository extends JpaRepository<ServicoImpressao, Long> {
@@ -31,4 +32,8 @@ public interface ServicoImpressaoRepository extends JpaRepository<ServicoImpress
     List<ServicoImpressao> buscarSimplificado(@Param("pecasPequenas") boolean pecasPequenas,
                                               @Param("decorativos") boolean decorativos,
                                               @Param("prototipos") boolean prototipos);
+
+    List<ServicoImpressao> findByMaker_Id(Long makerId);
+
+    Optional<ServicoImpressao> findByIdAndMaker_Id(Long id, Long makerId);
 }

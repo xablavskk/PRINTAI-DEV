@@ -8,6 +8,8 @@ const CardServico = ({ resultado, cliente, setLoginAberto }) => {
   const [modalAberto, setModalAberto] = useState(false);
   const [pedidoAberto, setPedidoAberto] = useState(false);
 
+  const isMeuServico = cliente && cliente.id === resultado.maker?.id;
+
   const handleSolicitar = (e) => {
     e.stopPropagation();
     if (!cliente) {
@@ -63,12 +65,18 @@ const CardServico = ({ resultado, cliente, setLoginAberto }) => {
           >
             Ver Perfil
           </button>
-          <button 
-            className="btn btn-primary"
-            onClick={handleSolicitar}
-          >
-            Solicitar Pedido
-          </button>
+          {isMeuServico ? (
+            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: 'var(--accent-color)', fontWeight: '600', border: '1px solid var(--accent-color)', borderRadius: '8px', padding: '0.4rem' }}>
+              Meu serviço
+            </span>
+          ) : (
+            <button
+              className="btn btn-primary"
+              onClick={handleSolicitar}
+            >
+              Solicitar Pedido
+            </button>
+          )}
         </div>
       </div>
 
