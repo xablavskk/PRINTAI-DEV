@@ -177,7 +177,7 @@ export default function DashboardMaker() {
 
       <div className="dashboard-tabs">
         <button className={`tab-btn ${abaAtiva === 'pedidos' ? 'active' : ''}`} onClick={() => setAbaAtiva('pedidos')}>
-          <Package size={16} /> Pedidos
+          <Package size={16} /> Pedidos <span className="tab-count">({pedidos.length})</span>
           {pedidos.filter(p => p.status === 'AGUARDANDO_ANALISE').length > 0 && (
             <span className="tab-badge">{pedidos.filter(p => p.status === 'AGUARDANDO_ANALISE').length}</span>
           )}
