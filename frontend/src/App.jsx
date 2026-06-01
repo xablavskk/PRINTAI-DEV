@@ -3,9 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SearchServices from './pages/BuscaServicos';
 import CadastroMaker from './pages/CadastroMaker';
 import CadastroCliente from './pages/CadastroCliente';
+import DashboardMaker from './pages/DashboardMaker';
 import ModalLogin from './components/ModalLogin';
 import ModalMeusPedidos from './components/ModalMeusPedidos';
-import { Printer, LogOut, User, ClipboardList } from 'lucide-react';
+import { Printer, LogOut, User, ClipboardList, LayoutDashboard } from 'lucide-react';
 import './App.css';
 
 function App() {
@@ -38,17 +39,24 @@ function App() {
             <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               {cliente ? (
                 <>
-                  <button 
-                    onClick={() => setPedidosAberto(true)} 
-                    className="btn btn-outline" 
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}
+                  <button
+                    onClick={() => setPedidosAberto(true)}
+                    className="btn btn-outline"
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                   >
                     <ClipboardList size={16} />
                     Meus Pedidos
                   </button>
-                  <Link to="/maker/cadastro" className="btn btn-outline" style={{ textDecoration: 'none' }}>
-                    Seja um Maker
-                  </Link>
+                  {cliente.perfil === 'MAKER' ? (
+                    <Link to="/maker/dashboard" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}>
+                      <LayoutDashboard size={16} />
+                      Meu Painel
+                    </Link>
+                  ) : (
+                    <Link to="/maker/cadastro" className="btn btn-outline" style={{ textDecoration: 'none' }}>
+                      Seja um Maker
+                    </Link>
+                  )}
                   <div className="user-menu" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', paddingLeft: '0.5rem', borderLeft: '1px solid var(--glass-border)' }}>
                     <div className="user-badge" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)', fontSize: '0.9rem' }}>
                       <User size={16} color="var(--accent-color)" />
@@ -82,6 +90,7 @@ function App() {
             <Route path="/" element={<SearchServices cliente={cliente} setLoginAberto={setLoginAberto} />} />
             <Route path="/busca" element={<SearchServices cliente={cliente} setLoginAberto={setLoginAberto} />} />
             <Route path="/maker/cadastro" element={<CadastroMaker />} />
+            <Route path="/maker/dashboard" element={<DashboardMaker />} />
             <Route path="/cliente/cadastro" element={<CadastroCliente />} />
           </Routes>
         </main>

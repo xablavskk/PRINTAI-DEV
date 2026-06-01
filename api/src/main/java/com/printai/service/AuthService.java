@@ -23,8 +23,12 @@ public class AuthService {
             throw new RegraNegocioException("E-mail ou senha incorretos");
         }
 
-        if (usuario.getPerfil() != Perfil.CLIENTE) {
-            throw new RegraNegocioException("Acesso restrito para perfis de CLIENTE neste canal.");
+        if (usuario.getPerfil() == Perfil.ADMINISTRADOR) {
+            throw new RegraNegocioException("Acesso restrito. Use o painel administrativo.");
+        }
+
+        if (usuario.getPerfil() == Perfil.MAKER && !Boolean.TRUE.equals(usuario.getStatusAprovacao())) {
+            throw new RegraNegocioException("Sua conta de Maker ainda não foi aprovada pelo administrador.");
         }
 
         return LoginRespostaDTO.builder()

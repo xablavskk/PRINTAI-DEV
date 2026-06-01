@@ -3,7 +3,7 @@ import './ModalSolicitarPedido.css';
 import { pedidoService } from '../services/pedidoService';
 
 export default function ModalSolicitarPedido({ isOpen, onClose, servico, cliente }) {
-  const [tipoPedido, setTipoPedido] = useState('COM_MODELO');
+  const [tipoPedido, setTipoPedido] = useState('SEM_MODELO');
   const [arquivo3D, setArquivo3D] = useState('');
   const [descricaoNecessidade, setDescricaoNecessidade] = useState('');
   const [material, setMaterial] = useState('');

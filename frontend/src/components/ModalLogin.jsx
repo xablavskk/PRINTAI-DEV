@@ -41,7 +41,7 @@ export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
 
         <div className="auth-header">
           <h2>Bem-vindo à PrintAI</h2>
-          <p>Faça login como cliente para solicitar seu projeto 3D.</p>
+          <p>Faça login para acessar sua conta.</p>
         </div>
 
         {erro && <div className="auth-error">{erro}</div>}
@@ -72,7 +72,7 @@ export default function ModalLogin({ isOpen, onClose, onLoginSuccess }) {
           </div>
 
           <button type="submit" className="btn-auth-submit" disabled={loading}>
-            {loading ? <div className="spinner-small"></div> : 'Entrar como Cliente'}
+            {loading ? <div className="spinner-small"></div> : 'Entrar'}
           </button>
         </form>
 
