@@ -54,23 +54,10 @@ export const makerService = {
     await apiClient.delete(`/maker/servicos/${servicoId}`, { headers: headers(makerId) });
   },
 
-  // Impressoras
-  async listarImpressoras(makerId) {
-    const { data } = await apiClient.get('/maker/impressoras', { headers: headers(makerId) });
+  // Avaliações
+  async listarAvaliacoes(makerId) {
+    const { data } = await apiClient.get('/maker/avaliacoes', { headers: headers(makerId) });
     return data;
   },
 
-  async criarImpressora(makerId, dados) {
-    const { data } = await apiClient.post('/maker/impressoras', dados, { headers: headers(makerId) });
-    return data;
-  },
-
-  async toggleDisponibilidade(makerId, impressoraId) {
-    const { data } = await apiClient.patch(
-      `/maker/impressoras/${impressoraId}/disponibilidade`,
-      {},
-      { headers: headers(makerId) }
-    );
-    return data;
-  },
 };

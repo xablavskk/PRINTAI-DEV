@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { makerService } from '../services/makerService';
 import {
-  Package, Wrench, ChevronDown, ChevronUp,
+  Package, Wrench, Star, ChevronDown, ChevronUp,
   Plus, Pencil, Trash2, CheckCircle, XCircle, PlayCircle, Flag
 } from 'lucide-react';
 import './DashboardMaker.css';
@@ -38,6 +38,7 @@ export default function DashboardMaker() {
 
   const [pedidos, setPedidos] = useState([]);
   const [servicos, setServicos] = useState([]);
+  const [avaliacoes, setAvaliacoes] = useState([]);
   const [tipos, setTipos] = useState([]);
   const [materiais, setMateriais] = useState([]);
 
@@ -65,14 +66,16 @@ export default function DashboardMaker() {
     setLoading(true);
     setErro('');
     try {
-      const [p, s, t, m] = await Promise.all([
+      const [p, s, a, t, m] = await Promise.all([
         makerService.listarPedidos(makerId),
         makerService.listarServicos(makerId),
+        makerService.listarAvaliacoes(makerId),
         makerService.listarTipos(),
         makerService.listarMateriais(),
       ]);
       setPedidos(p);
       setServicos(s);
+      setAvaliacoes(a);
       setTipos(t);
       setMateriais(m);
     } catch {
@@ -174,13 +177,16 @@ export default function DashboardMaker() {
 
       <div className="dashboard-tabs">
         <button className={`tab-btn ${abaAtiva === 'pedidos' ? 'active' : ''}`} onClick={() => setAbaAtiva('pedidos')}>
-          <Package size={16} /> Pedidos
+          <Package size={16} /> Pedidos <span className="tab-count">({pedidos.length})</span>
           {pedidos.filter(p => p.status === 'AGUARDANDO_ANALISE').length > 0 && (
             <span className="tab-badge">{pedidos.filter(p => p.status === 'AGUARDANDO_ANALISE').length}</span>
           )}
         </button>
         <button className={`tab-btn ${abaAtiva === 'servicos' ? 'active' : ''}`} onClick={() => setAbaAtiva('servicos')}>
           <Wrench size={16} /> Serviços <span className="tab-count">({servicos.length})</span>
+        </button>
+        <button className={`tab-btn ${abaAtiva === 'avaliacoes' ? 'active' : ''}`} onClick={() => setAbaAtiva('avaliacoes')}>
+          <Star size={16} /> Avaliações <span className="tab-count">({avaliacoes.length})</span>
         </button>
       </div>
 
@@ -374,6 +380,68 @@ export default function DashboardMaker() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+            {/* ── ABA AVALIAÇÕES ──────────────────────────────────────────── */}
+            {abaAtiva === 'avaliacoes' && (
+              <div>
+                {avaliacoes.length === 0 ? (
+                  <div className="empty-state">
+                    <Star size={40} style={{ opacity: 0.3, marginBottom: '0.5rem' }} />
+                    <p>Nenhuma avaliação recebida ainda.</p>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      As avaliações aparecem aqui quando clientes finalizarem pedidos com você.
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="avaliacoes-resumo">
+                      <div className="resumo-nota">
+                        <span className="nota-numero">
+                          {(avaliacoes.reduce((sum, a) => sum + a.nota, 0) / avaliacoes.length).toFixed(1)}
+                        </span>
+                        <div className="resumo-stars">
+                          {[1, 2, 3, 4, 5].map(n => {
+                            const media = avaliacoes.reduce((sum, a) => sum + a.nota, 0) / avaliacoes.length;
+                            return (
+                              <Star key={n} size={18}
+                                fill={n <= Math.round(media) ? '#f59e0b' : 'none'}
+                                color={n <= Math.round(media) ? '#f59e0b' : 'var(--text-secondary)'}
+                                strokeWidth={1.5}
+                              />
+                            );
+                          })}
+                        </div>
+                        <span className="resumo-total">{avaliacoes.length} avaliação{avaliacoes.length !== 1 ? 'ões' : ''}</span>
+                      </div>
+                    </div>
+
+                    <div className="avaliacoes-lista">
+                      {avaliacoes.map(a => (
+                        <div key={a.id} className="avaliacao-card">
+                          <div className="avaliacao-topo">
+                            <strong>{a.clienteNome}</strong>
+                            <div className="avaliacao-stars">
+                              {[1, 2, 3, 4, 5].map(n => (
+                                <Star key={n} size={14}
+                                  fill={n <= a.nota ? '#f59e0b' : 'none'}
+                                  color={n <= a.nota ? '#f59e0b' : 'var(--text-secondary)'}
+                                  strokeWidth={1.5}
+                                />
+                              ))}
+                            </div>
+                            {a.dataAvaliacao && (
+                              <span className="avaliacao-data">
+                                {new Date(a.dataAvaliacao).toLocaleDateString('pt-BR')}
+                              </span>
+                            )}
+                          </div>
+                          <p className="avaliacao-comentario">{a.comentario}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </>

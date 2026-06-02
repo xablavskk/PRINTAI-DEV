@@ -45,6 +45,16 @@ public class MakerController {
     }
 
     // -------------------------------------------------------------------------
+    // Avaliações recebidas
+    // -------------------------------------------------------------------------
+
+    @GetMapping("/avaliacoes")
+    public ResponseEntity<List<AvaliacaoDTO>> listarAvaliacoes(
+            @RequestHeader("X-Maker-Id") Long makerId) {
+        return ResponseEntity.ok(makerService.listarAvaliacoes(makerId));
+    }
+
+    // -------------------------------------------------------------------------
     // Serviços de impressão
     // -------------------------------------------------------------------------
 

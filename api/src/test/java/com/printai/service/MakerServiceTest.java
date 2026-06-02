@@ -3,6 +3,7 @@ package com.printai.service;
 import com.printai.dto.*;
 import com.printai.exception.RegraNegocioException;
 import com.printai.model.*;
+import com.printai.model.StatusPedido;
 import com.printai.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +29,7 @@ class MakerServiceTest {
     @Mock private ServicoImpressaoRepository servicoRepository;
     @Mock private TipoRepository tipoRepository;
     @Mock private MaterialRepository materialRepository;
+    @Mock private AvaliacaoRepository avaliacaoRepository;
 
     @InjectMocks
     private MakerService makerService;
@@ -55,7 +57,7 @@ class MakerServiceTest {
                 .build();
 
         pedidoPadrao = Pedido.builder()
-                .id(100L).status("AGUARDANDO_ANALISE")
+                .id(100L).status(StatusPedido.AGUARDANDO_ANALISE)
                 .tipoPedido(TipoPedido.SEM_MODELO)
                 .descricaoNecessidade("Peça de reposição").quantidade(1)
                 .dataPedido(new Date())
@@ -86,12 +88,12 @@ class MakerServiceTest {
     @DisplayName("listarPedidos com filtro de status deve usar repositório filtrado")
     void listarPedidos_comFiltroStatus_usaRepositorioFiltrado() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(makerPadrao));
-        when(pedidoRepository.findByServico_Maker_IdAndStatus(1L, "APROVADO")).thenReturn(List.of());
+        when(pedidoRepository.findByServico_Maker_IdAndStatus(1L, StatusPedido.APROVADO)).thenReturn(List.of());
 
         List<PedidoMakerRespostaDTO> resultado = makerService.listarPedidos(1L, "APROVADO");
 
         assertThat(resultado).isEmpty();
-        verify(pedidoRepository).findByServico_Maker_IdAndStatus(1L, "APROVADO");
+        verify(pedidoRepository).findByServico_Maker_IdAndStatus(1L, StatusPedido.APROVADO);
         verify(pedidoRepository, never()).findByServico_Maker_Id(any());
     }
 
@@ -133,13 +135,13 @@ class MakerServiceTest {
         PedidoMakerRespostaDTO resultado = makerService.atualizarStatusPedido(1L, 100L, dto);
 
         assertThat(resultado.getStatus()).isEqualTo("APROVADO");
-        verify(pedidoRepository).save(argThat(p -> "APROVADO".equals(p.getStatus())));
+        verify(pedidoRepository).save(argThat(p -> StatusPedido.APROVADO == p.getStatus()));
     }
 
     @Test
     @DisplayName("atualizarStatusPedido em pedido FINALIZADO deve lançar RegraNegocioException")
     void atualizarStatusPedido_pedidoFinalizado_lancaExcecao() {
-        pedidoPadrao.setStatus("FINALIZADO");
+        pedidoPadrao.setStatus(StatusPedido.FINALIZADO);
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(makerPadrao));
         when(pedidoRepository.findByIdAndServico_Maker_Id(100L, 1L)).thenReturn(Optional.of(pedidoPadrao));
 
@@ -292,5 +294,52 @@ class MakerServiceTest {
         assertThatThrownBy(() -> makerService.removerServico(1L, 10L))
                 .isInstanceOf(RegraNegocioException.class)
                 .hasMessageContaining("não pertence a este Maker");
+    }
+
+    // ── listarAvaliacoes ───────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("listarAvaliacoes deve retornar avaliações recebidas pelo maker")
+    void listarAvaliacoes_retornaAvaliacoes() {
+        Usuario cliente = Usuario.builder()
+                .id(2L).nome("Ana Cliente").email("ana@gmail.com")
+                .senha("senha456").perfil(Perfil.CLIENTE).build();
+
+        AvaliacaoMaker avaliacao = AvaliacaoMaker.builder()
+                .id(1L).nota(5).comentario("Excelente!")
+                .dataAvaliacao(new Date())
+                .cliente(cliente).maker(makerPadrao)
+                .build();
+
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(makerPadrao));
+        when(avaliacaoRepository.findByMaker_Id(1L)).thenReturn(List.of(avaliacao));
+
+        List<AvaliacaoDTO> resultado = makerService.listarAvaliacoes(1L);
+
+        assertThat(resultado).hasSize(1);
+        assertThat(resultado.get(0).getId()).isEqualTo(1L);
+        assertThat(resultado.get(0).getNota()).isEqualTo(5);
+        assertThat(resultado.get(0).getComentario()).isEqualTo("Excelente!");
+        assertThat(resultado.get(0).getClienteNome()).isEqualTo("Ana Cliente");
+        assertThat(resultado.get(0).getDataAvaliacao()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("listarAvaliacoes sem avaliações deve retornar lista vazia")
+    void listarAvaliacoes_semAvaliacoes_retornaListaVazia() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(makerPadrao));
+        when(avaliacaoRepository.findByMaker_Id(1L)).thenReturn(List.of());
+
+        assertThat(makerService.listarAvaliacoes(1L)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("listarAvaliacoes com maker inexistente deve lançar RegraNegocioException")
+    void listarAvaliacoes_makerNaoEncontrado_lancaExcecao() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> makerService.listarAvaliacoes(99L))
+                .isInstanceOf(RegraNegocioException.class)
+                .hasMessageContaining("Maker não encontrado");
     }
 }
