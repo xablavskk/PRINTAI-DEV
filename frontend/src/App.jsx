@@ -39,6 +39,7 @@ function App() {
             <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               {cliente ? (
                 <>
+                {cliente?.perfil === 'CLIENTE' && (
                   <button
                     onClick={() => setPedidosAberto(true)}
                     className="btn btn-outline"
@@ -47,6 +48,7 @@ function App() {
                     <ClipboardList size={16} />
                     Meus Pedidos
                   </button>
+                )}
                   {cliente.perfil === 'MAKER' ? (
                     <Link to="/maker/dashboard" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}>
                       <LayoutDashboard size={16} />
