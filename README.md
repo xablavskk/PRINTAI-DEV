@@ -99,3 +99,17 @@ Se você ou outra pessoa subiu código no `PRINTAI-DEV` e você quer trazer para
 | :--- | :--- |
 | **Pasta do código sumiu ou está vazia** | `git submodule update --init --recursive` |
 | **Saber em qual commit o submódulo está** | `git submodule status` |
+
+
+
+## Evidências de Testes
+
+Para evidenciar os testes unitarios do sistema, acessamos a api 
+
+cd api/
+
+e rodamos o seguinte comando para reportar as evidências 
+
+```powershell
+mvn surefire-report:report
+```
