@@ -1,0 +1,275 @@
+/* ── Layout geral ─────────────────────────────── */
+.admin-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-color), #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.admin-meta {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ── Filtro tabs ──────────────────────────────── */
+.admin-filtros {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-filtros button {
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.admin-filtros button.ativo {
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+}
+
+/* ── Cards de maker ───────────────────────────── */
+.admin-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.admin-card {
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.admin-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.admin-card-info h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.admin-card-info p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.15rem;
+}
+
+/* ── Badge de status ──────────────────────────── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge.pendente  { background: rgba(234,179,8,0.15);  color: #ca8a04; }
+.status-badge.aprovado  { background: rgba(16,185,129,0.15); color: #059669; }
+.status-badge.rejeitado { background: rgba(239,68,68,0.15);  color: #dc2626; }
+
+/* ── Serviços do maker ────────────────────────── */
+.admin-servicos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.servico-tag {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(139,92,246,0.1);
+  color: var(--accent-color);
+  border: 1px solid rgba(139,92,246,0.2);
+}
+
+/* ── Ações ────────────────────────────────────── */
+.admin-acoes {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.btn-aprovar {
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background: #059669;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+
+.btn-aprovar:hover  { opacity: 0.85; }
+.btn-aprovar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-rejeitar {
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background: #dc2626;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+
+.btn-rejeitar:hover  { opacity: 0.85; }
+.btn-rejeitar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Modal rejeição ───────────────────────────── */
+.rejeicao-form {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rejeicao-form textarea {
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  resize: vertical;
+  min-height: 72px;
+}
+
+.rejeicao-form textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.rejeicao-acoes {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ── Vazio / erro / loading ───────────────────── */
+.admin-vazio, .admin-erro {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+}
+
+.admin-erro { color: #f87171; }
+
+/* ── Login ────────────────────────────────────── */
+.admin-login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.admin-login-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.admin-login-card h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-color), #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.4rem;
+}
+
+.admin-login-card p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-login-form label {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.admin-login-form input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.admin-login-form input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(139,92,246,0.2);
+}
+
+.admin-login-erro {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: #f87171;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
