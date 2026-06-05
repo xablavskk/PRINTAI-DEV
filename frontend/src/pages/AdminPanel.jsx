@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, LogOut, CheckCircle, XCircle, Clock, Users, Loader } from 'lucide-react';
 import { adminService } from '../services/adminService';
+import { authService } from '../services/authService';
 import { useAdmin } from '../hooks/useAdmin';
+import ModalAlerta from '../components/ModalAlerta';
 import './AdminPanel.css';
 
 // ─── Sub-componente: login ────────────────────────────────────────────────────
@@ -191,8 +194,35 @@ function MakerCard({ maker, adminId, onProcessar }) {
 
 // ─── Painel principal ─────────────────────────────────────────────────────────
 export default function AdminPanel() {
+  const navigate = useNavigate();
   const [admin, setAdmin] = useState(() => adminService.obterSessao());
   const { makers, loading, erro, filtro, setFiltro, carregar, processar } = useAdmin();
+  const [alerta, setAlerta] = useState({
+    isOpen: false,
+    titulo: '',
+    mensagem: '',
+    tipo: 'warning',
+    onConfirm: null
+  });
+
+  useEffect(() => {
+    const clienteSessao = authService.obterSessao();
+    if (clienteSessao) {
+      setAlerta({
+        isOpen: true,
+        titulo: 'Acesso Negado',
+        mensagem: 'Usuários logados não possuem permissão de administrador.',
+        tipo: 'warning',
+        onConfirm: () => {
+          if (clienteSessao.perfil === 'MAKER') {
+            navigate('/maker/dashboard');
+          } else {
+            navigate('/');
+          }
+        }
+      });
+    }
+  }, [navigate]);
 
   useEffect(() => {
     if (admin) carregar(admin.id);
@@ -204,7 +234,21 @@ export default function AdminPanel() {
   };
 
   if (!admin) {
-    return <AdminLogin onLogin={setAdmin} />;
+    return (
+      <>
+        <AdminLogin onLogin={setAdmin} />
+        <ModalAlerta
+          isOpen={alerta.isOpen}
+          onClose={() => {
+            setAlerta(prev => ({ ...prev, isOpen: false }));
+            if (alerta.onConfirm) alerta.onConfirm();
+          }}
+          titulo={alerta.titulo}
+          mensagem={alerta.mensagem}
+          tipo={alerta.tipo}
+        />
+      </>
+    );
   }
 
   const pendentes = makers.filter(m => m.statusAprovacao === null || m.statusAprovacao === undefined).length;
@@ -260,6 +304,16 @@ export default function AdminPanel() {
           ))}
         </div>
       )}
+      <ModalAlerta
+        isOpen={alerta.isOpen}
+        onClose={() => {
+          setAlerta(prev => ({ ...prev, isOpen: false }));
+          if (alerta.onConfirm) alerta.onConfirm();
+        }}
+        titulo={alerta.titulo}
+        mensagem={alerta.mensagem}
+        tipo={alerta.tipo}
+      />
     </div>
   );
 }

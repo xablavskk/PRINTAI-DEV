@@ -40,6 +40,7 @@ export const adminService = {
   },
 
   salvarSessao: (dados) => {
+    localStorage.removeItem('printai_cliente');
     localStorage.setItem('printai_admin', JSON.stringify(dados));
   },
 

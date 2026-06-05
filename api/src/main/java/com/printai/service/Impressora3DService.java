@@ -23,7 +23,9 @@ public class Impressora3DService {
 
     @Transactional(readOnly = true)
     public List<ImpressoraRespostaDTO> buscarImpressoras(BuscaServicoRequestDTO buscaDTO, Double lat, Double lon, Double raioKm) {
-        List<Impressora3D> impressoras = impressora3DRepository.findAll();
+        List<Impressora3D> impressoras = impressora3DRepository.findAll().stream()
+                .filter(i -> i.getMaker() != null && Boolean.TRUE.equals(i.getMaker().getStatusAprovacao()))
+                .collect(Collectors.toList());
 
         if (lat != null && lon != null && raioKm != null) {
             double deltaLat = raioKm / 111.0;

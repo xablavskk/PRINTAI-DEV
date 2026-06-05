@@ -46,7 +46,15 @@ public class MakerService {
             throw new RegraNegocioException("Pedido já finalizado não pode ser alterado");
         }
 
-        pedido.setStatus(StatusPedido.valueOf(dto.getStatus()));
+        StatusPedido novoStatus;
+        try {
+            novoStatus = StatusPedido.valueOf(dto.getStatus().trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RegraNegocioException("Status inválido: " + dto.getStatus()
+                + ". Valores aceitos: AGUARDANDO_ANALISE, APROVADO, EM_PRODUCAO, FINALIZADO, CANCELADO");
+        }
+
+        pedido.setStatus(novoStatus);
         return toRespostaMaker(pedidoRepository.save(pedido));
     }
 

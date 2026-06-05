@@ -43,6 +43,7 @@ class MakerServiceTest {
         makerPadrao = Usuario.builder()
                 .id(1L).nome("Mario Maker").email("mario@printai.com")
                 .senha("senha123").perfil(Perfil.MAKER)
+                .statusAprovacao(true)   // aprovado — pré-condição para usar o painel
                 .build();
 
         servicoPadrao = ServicoImpressao.builder()
@@ -118,6 +119,19 @@ class MakerServiceTest {
         assertThatThrownBy(() -> makerService.listarPedidos(2L, null))
                 .isInstanceOf(RegraNegocioException.class)
                 .hasMessageContaining("Acesso restrito para Makers");
+    }
+
+    @Test
+    @DisplayName("listarPedidos com maker não aprovado deve lançar RegraNegocioException")
+    void listarPedidos_makerNaoAprovado_lancaExcecao() {
+        Usuario makerPendente = Usuario.builder()
+                .id(3L).nome("Pendente").email("pendente@test.com").senha("123456")
+                .perfil(Perfil.MAKER).statusAprovacao(null).build();
+        when(usuarioRepository.findById(3L)).thenReturn(Optional.of(makerPendente));
+
+        assertThatThrownBy(() -> makerService.listarPedidos(3L, null))
+                .isInstanceOf(RegraNegocioException.class)
+                .hasMessageContaining("ainda não foi aprovada pelo administrador");
     }
 
     // ── atualizarStatusPedido ──────────────────────────────────────────────────

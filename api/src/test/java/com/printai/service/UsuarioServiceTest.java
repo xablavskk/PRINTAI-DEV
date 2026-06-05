@@ -70,7 +70,7 @@ class UsuarioServiceTest {
                 .id(1L).nome("Mario Maker").email("mario@printai.com")
                 .telefone("11999990000").cidade("São Paulo").estado("SP")
                 .latitude(-23.55).longitude(-46.63)
-                .perfil(Perfil.MAKER).statusAprovacao(true)
+                .perfil(Perfil.MAKER).statusAprovacao(null)  // pendente — comportamento esperado
                 .build();
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(makerSalvo);
 
@@ -81,9 +81,9 @@ class UsuarioServiceTest {
         assertThat(resposta.getEmail()).isEqualTo("mario@printai.com");
         assertThat(resposta.getLatitude()).isEqualTo(-23.55);
         assertThat(resposta.getLongitude()).isEqualTo(-46.63);
-        assertThat(resposta.getStatusAprovacao()).isTrue();
+        assertThat(resposta.getStatusAprovacao()).isNull(); // pendente de aprovação
         assertThat(resposta.getTotalServicos()).isEqualTo(0);
-        assertThat(resposta.getMensagem()).contains("sucesso");
+        assertThat(resposta.getMensagem()).contains("Aguarde a aprovação do administrador");
 
         verify(usuarioRepository).save(any(Usuario.class));
         verify(servicoImpressaoRepository, never()).saveAll(any());

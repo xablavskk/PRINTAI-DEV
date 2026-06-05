@@ -7,6 +7,7 @@ export const authService = {
   },
 
   salvarSessao: (dados) => {
+    localStorage.removeItem('printai_admin');
     localStorage.setItem('printai_cliente', JSON.stringify(dados));
   },
 

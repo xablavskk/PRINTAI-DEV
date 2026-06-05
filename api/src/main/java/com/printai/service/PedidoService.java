@@ -37,6 +37,10 @@ public class PedidoService {
         ServicoImpressao servico = servicoImpressaoRepository.findById(dto.getServicoId())
                 .orElseThrow(() -> new RegraNegocioException("Serviço de impressão não encontrado"));
 
+        if (!Boolean.TRUE.equals(servico.getMaker().getStatusAprovacao())) {
+            throw new RegraNegocioException("Este serviço não está disponível no momento.");
+        }
+
         Pedido pedido = Pedido.builder()
                 .cliente(cliente)
                 .servico(servico)
