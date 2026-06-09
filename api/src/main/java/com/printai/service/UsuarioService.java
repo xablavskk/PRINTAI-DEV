@@ -78,7 +78,7 @@ public class UsuarioService {
                 .latitude(latitude)
                 .longitude(longitude)
                 .perfil(Perfil.MAKER)
-                .statusAprovacao(true)
+                .statusAprovacao(null) // pendente — aguarda aprovação do administrador
                 .build();
 
         Usuario salvo = usuarioRepository.save(maker);
@@ -124,8 +124,8 @@ public class UsuarioService {
         }
 
         String mensagem = totalServicos > 0
-                ? String.format("Cadastro realizado com sucesso! %d serviço(s) cadastrado(s).", totalServicos)
-                : "Cadastro realizado com sucesso!";
+                ? String.format("Solicitação enviada! %d serviço(s) cadastrado(s). Aguarde a aprovação do administrador para ativar sua conta.", totalServicos)
+                : "Solicitação enviada! Aguarde a aprovação do administrador para ativar sua conta.";
 
         return CadastroMakerRespostaDTO.builder()
                 .id(salvo.getId())

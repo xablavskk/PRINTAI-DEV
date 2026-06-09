@@ -63,19 +63,29 @@ INSERT IGNORE INTO materiais (nome, descricao) VALUES
    'Resina fotopolimerizável (padrão, ABS-like, flexível ou castable). Usada em impressoras SLA, DLP e MSLA. Alta resolução e acabamento liso. Indicada para miniaturas, joias, odontologia e moldes.');
 
 -- -------------------------------------------------------------
--- USUÁRIOS DE TESTE (Clientes e Makers)
+-- USUÁRIOS DE TESTE (Clientes, Makers e Administrador)
 -- -------------------------------------------------------------
+
+-- Administrador padrão do sistema
+-- Senha em texto plano: admin123
+INSERT IGNORE INTO usuarios (id, nome, email, senha, telefone, cidade, estado, perfil, status_aprovacao, documento_cpf_cnpj) VALUES
+  (1, 'Administrador PrintAI', 'admin@printai.com', 'admin123', '19900000000', 'Indaiatuba', 'SP', 'ADMINISTRADOR', true, '00000000000');
 
 -- Cliente de Teste
 -- Senha em texto plano: senha123
 INSERT IGNORE INTO usuarios (id, nome, email, senha, telefone, cidade, estado, perfil, status_aprovacao, documento_cpf_cnpj) VALUES
   (10, 'João Cliente', 'cliente@printai.com', 'senha123', '19988880000', 'Indaiatuba', 'SP', 'CLIENTE', true, '11122233344');
 
--- Makers de Teste
+-- Makers de Teste (aprovados)
 -- Senhas em texto plano: senha123
 INSERT IGNORE INTO usuarios (id, nome, email, senha, telefone, cidade, estado, perfil, status_aprovacao, documento_cpf_cnpj, latitude, longitude) VALUES
   (11, 'Mario Henrique Maker', 'maker@printai.com', 'senha123', '19977770000', 'Indaiatuba', 'SP', 'MAKER', true, '22233344455', -23.0913052, -47.2180265),
   (12, 'Ana Resinas Pro', 'ana@printai.com', 'senha123', '19966660000', 'Campinas', 'SP', 'MAKER', true, '33344455566', -22.9099384, -47.0626332);
+
+-- Maker de Teste (pendente de aprovação — statusAprovacao NULL)
+INSERT IGNORE INTO usuarios (id, nome, email, senha, telefone, cidade, estado, perfil, status_aprovacao, documento_cpf_cnpj, latitude, longitude) VALUES
+  (13, 'Carlos Maker Pendente', 'carlos@printai.com', 'senha123', '19955550000', 'Sorocaba', 'SP', 'MAKER', null, '44455566677', -23.5015, -47.4526);
+  
 
 -- -------------------------------------------------------------
 -- SERVIÇOS DE IMPRESSÃO DE TESTE

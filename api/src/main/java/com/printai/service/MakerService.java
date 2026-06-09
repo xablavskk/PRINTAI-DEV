@@ -46,7 +46,15 @@ public class MakerService {
             throw new RegraNegocioException("Pedido já finalizado não pode ser alterado");
         }
 
-        pedido.setStatus(StatusPedido.valueOf(dto.getStatus()));
+        StatusPedido novoStatus;
+        try {
+            novoStatus = StatusPedido.valueOf(dto.getStatus().trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RegraNegocioException("Status inválido: " + dto.getStatus()
+                + ". Valores aceitos: AGUARDANDO_ANALISE, APROVADO, EM_PRODUCAO, FINALIZADO, CANCELADO");
+        }
+
+        pedido.setStatus(novoStatus);
         return toRespostaMaker(pedidoRepository.save(pedido));
     }
 
@@ -127,9 +135,18 @@ public class MakerService {
     private Usuario validarMaker(Long makerId) {
         Usuario maker = usuarioRepository.findById(makerId)
                 .orElseThrow(() -> new RegraNegocioException("Maker não encontrado"));
+
         if (maker.getPerfil() != Perfil.MAKER) {
             throw new RegraNegocioException("Acesso restrito para Makers");
         }
+
+        if (!Boolean.TRUE.equals(maker.getStatusAprovacao())) {
+            throw new RegraNegocioException(
+                "Sua conta ainda não foi aprovada pelo administrador. " +
+                "Aguarde a análise da sua solicitação de cadastro."
+            );
+        }
+
         return maker;
     }
 

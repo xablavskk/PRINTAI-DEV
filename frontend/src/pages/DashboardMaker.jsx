@@ -6,6 +6,7 @@ import {
   Package, Wrench, Star, ChevronDown, ChevronUp,
   Plus, Pencil, Trash2, CheckCircle, XCircle, PlayCircle, Flag
 } from 'lucide-react';
+import ModalAlerta from '../components/ModalAlerta';
 import './DashboardMaker.css';
 
 const STATUS_LABEL = {
@@ -35,6 +36,12 @@ const FORM_SERVICO_VAZIO = {
 export default function DashboardMaker() {
   const navigate = useNavigate();
   const [maker, setMaker] = useState(null);
+  const [alerta, setAlerta] = useState({
+    isOpen: false,
+    titulo: '',
+    mensagem: '',
+    tipo: 'warning'
+  });
 
   const [pedidos, setPedidos] = useState([]);
   const [servicos, setServicos] = useState([]);
@@ -100,7 +107,12 @@ export default function DashboardMaker() {
       const atualizado = await makerService.atualizarStatusPedido(maker.id, pedidoId, novoStatus);
       setPedidos(prev => prev.map(p => p.id === pedidoId ? atualizado : p));
     } catch (e) {
-      alert(e.response?.data?.erro || 'Erro ao atualizar status');
+      setAlerta({
+        isOpen: true,
+        titulo: 'Erro',
+        mensagem: e.response?.data?.erro || 'Erro ao atualizar status',
+        tipo: 'error'
+      });
     }
   };
 
@@ -146,7 +158,12 @@ export default function DashboardMaker() {
       }
       setFormServicoAberto(false);
     } catch (e) {
-      alert(e.response?.data?.erro || 'Erro ao salvar serviço');
+      setAlerta({
+        isOpen: true,
+        titulo: 'Erro',
+        mensagem: e.response?.data?.erro || 'Erro ao salvar serviço',
+        tipo: 'error'
+      });
     } finally {
       setSalvandoServico(false);
     }
@@ -158,7 +175,12 @@ export default function DashboardMaker() {
       await makerService.removerServico(maker.id, servicoId);
       setServicos(prev => prev.filter(s => s.id !== servicoId));
     } catch (e) {
-      alert(e.response?.data?.erro || 'Erro ao remover serviço');
+      setAlerta({
+        isOpen: true,
+        titulo: 'Erro',
+        mensagem: e.response?.data?.erro || 'Erro ao remover serviço',
+        tipo: 'error'
+      });
     }
   };
 
@@ -447,6 +469,13 @@ export default function DashboardMaker() {
           </>
         )}
       </div>
+      <ModalAlerta
+        isOpen={alerta.isOpen}
+        onClose={() => setAlerta(prev => ({ ...prev, isOpen: false }))}
+        titulo={alerta.titulo}
+        mensagem={alerta.mensagem}
+        tipo={alerta.tipo}
+      />
     </div>
   );
 }

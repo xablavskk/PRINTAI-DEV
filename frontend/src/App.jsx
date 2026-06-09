@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SearchServices from './pages/BuscaServicos';
 import CadastroMaker from './pages/CadastroMaker';
 import CadastroCliente from './pages/CadastroCliente';
+import AdminPanel from './pages/AdminPanel';
 import DashboardMaker from './pages/DashboardMaker';
 import ModalLogin from './components/ModalLogin';
 import ModalMeusPedidos from './components/ModalMeusPedidos';
@@ -94,6 +95,7 @@ function App() {
             <Route path="/maker/cadastro" element={<CadastroMaker />} />
             <Route path="/maker/dashboard" element={<DashboardMaker />} />
             <Route path="/cliente/cadastro" element={<CadastroCliente />} />
+            <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </main>
       </div>

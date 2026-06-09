@@ -79,10 +79,11 @@ public class ServicoImpressaoService {
             servicos = repository.findAll();
         }
 
-        return servicos.stream().map(s -> {
+        return servicos.stream()
+                .filter(s -> s.getMaker() != null && Boolean.TRUE.equals(s.getMaker().getStatusAprovacao()))
+                .map(s -> {
             ServicoRespostaDTO dto = converterParaDTO(s);
-            if (lat != null && lon != null && s.getMaker() != null
-                    && s.getMaker().getLatitude() != null && s.getMaker().getLongitude() != null) {
+            if (lat != null && lon != null && s.getMaker().getLatitude() != null && s.getMaker().getLongitude() != null) {
                 double dist = calcularDistancia(lat, lon, s.getMaker().getLatitude(), s.getMaker().getLongitude());
                 dto.setDistanciaKm(Math.round(dist * 10.0) / 10.0);
             }

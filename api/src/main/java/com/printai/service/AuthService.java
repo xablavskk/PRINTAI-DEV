@@ -31,6 +31,25 @@ public class AuthService {
             throw new RegraNegocioException("Sua conta de Maker ainda não foi aprovada pelo administrador.");
         }
 
+        return toLoginResposta(usuario);
+    }
+
+    public LoginRespostaDTO loginAdmin(LoginRequestDTO dto) {
+        Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RegraNegocioException("E-mail ou senha incorretos"));
+
+        if (!usuario.getSenha().equals(dto.getSenha())) {
+            throw new RegraNegocioException("E-mail ou senha incorretos");
+        }
+
+        if (usuario.getPerfil() != Perfil.ADMINISTRADOR) {
+            throw new RegraNegocioException("Acesso restrito ao painel administrativo.");
+        }
+
+        return toLoginResposta(usuario);
+    }
+
+    private LoginRespostaDTO toLoginResposta(Usuario usuario) {
         return LoginRespostaDTO.builder()
                 .id(usuario.getId())
                 .nome(usuario.getNome())
