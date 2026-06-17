@@ -34,6 +34,12 @@ Aplicação disponível em `http://localhost:5173`
 
 ---
 
+## Rodando em outra máquina
+
+Veja o [GUIA_INSTALACAO.md](GUIA_INSTALACAO.md) para o passo a passo completo de como rodar o projeto em outra máquina usando os scripts `start.sh` / `start.bat`.
+
+---
+
 ## Testes unitários
 
 ```bash
