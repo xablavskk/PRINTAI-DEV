@@ -44,47 +44,4 @@ public class MakerController {
         return ResponseEntity.ok(makerService.atualizarStatusPedido(makerId, id, dto));
     }
 
-    // -------------------------------------------------------------------------
-    // Avaliações recebidas
-    // -------------------------------------------------------------------------
-
-    @GetMapping("/avaliacoes")
-    public ResponseEntity<List<AvaliacaoDTO>> listarAvaliacoes(
-            @RequestHeader("X-Maker-Id") Long makerId) {
-        return ResponseEntity.ok(makerService.listarAvaliacoes(makerId));
-    }
-
-    // -------------------------------------------------------------------------
-    // Serviços de impressão
-    // -------------------------------------------------------------------------
-
-    @GetMapping("/servicos")
-    public ResponseEntity<List<ServicoMakerRespostaDTO>> listarServicos(
-            @RequestHeader("X-Maker-Id") Long makerId) {
-        return ResponseEntity.ok(makerService.listarServicos(makerId));
-    }
-
-    @PostMapping("/servicos")
-    public ResponseEntity<ServicoMakerRespostaDTO> criarServico(
-            @RequestHeader("X-Maker-Id") Long makerId,
-            @Valid @RequestBody ServicoImpressaoRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(makerService.criarServico(makerId, dto));
-    }
-
-    @PutMapping("/servicos/{id}")
-    public ResponseEntity<ServicoMakerRespostaDTO> editarServico(
-            @RequestHeader("X-Maker-Id") Long makerId,
-            @PathVariable Long id,
-            @Valid @RequestBody ServicoImpressaoRequestDTO dto) {
-        return ResponseEntity.ok(makerService.editarServico(makerId, id, dto));
-    }
-
-    @DeleteMapping("/servicos/{id}")
-    public ResponseEntity<Void> removerServico(
-            @RequestHeader("X-Maker-Id") Long makerId,
-            @PathVariable Long id) {
-        makerService.removerServico(makerId, id);
-        return ResponseEntity.noContent().build();
-    }
-
 }

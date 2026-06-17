@@ -1,5 +1,6 @@
 package com.printai.service;
 
+import com.printai.dto.AvaliacaoDTO;
 import com.printai.dto.AvaliacaoRequestDTO;
 import com.printai.dto.AvaliacaoRespostaDTO;
 import com.printai.exception.RegraNegocioException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -65,5 +67,37 @@ public class AvaliacaoService {
                 .dataAvaliacao(avaliacao.getDataAvaliacao())
                 .mensagem("Avaliação enviada com sucesso!")
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<AvaliacaoDTO> listarAvaliacoesRecebidas(Long makerId) {
+        validarMaker(makerId);
+        return avaliacaoRepository.findByMaker_Id(makerId).stream()
+                .map(a -> AvaliacaoDTO.builder()
+                        .id(a.getId())
+                        .clienteNome(a.getCliente().getNome())
+                        .nota(a.getNota())
+                        .comentario(a.getComentario())
+                        .dataAvaliacao(a.getDataAvaliacao())
+                        .build())
+                .toList();
+    }
+
+    private Usuario validarMaker(Long makerId) {
+        Usuario maker = usuarioRepository.findById(makerId)
+                .orElseThrow(() -> new RegraNegocioException("Maker não encontrado"));
+
+        if (maker.getPerfil() != Perfil.MAKER) {
+            throw new RegraNegocioException("Acesso restrito para Makers");
+        }
+
+        if (!Boolean.TRUE.equals(maker.getStatusAprovacao())) {
+            throw new RegraNegocioException(
+                "Sua conta ainda não foi aprovada pelo administrador. " +
+                "Aguarde a análise da sua solicitação de cadastro."
+            );
+        }
+
+        return maker;
     }
 }

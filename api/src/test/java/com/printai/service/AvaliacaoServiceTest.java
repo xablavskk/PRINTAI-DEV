@@ -1,5 +1,6 @@
 package com.printai.service;
 
+import com.printai.dto.AvaliacaoDTO;
 import com.printai.dto.AvaliacaoRequestDTO;
 import com.printai.dto.AvaliacaoRespostaDTO;
 import com.printai.exception.RegraNegocioException;
@@ -18,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -48,6 +51,7 @@ class AvaliacaoServiceTest {
         makerPadrao = Usuario.builder()
                 .id(2L).nome("Mario Maker").email("mario@printai.com")
                 .senha("senha456").perfil(Perfil.MAKER)
+                .statusAprovacao(true)   // aprovado — pré-condição para listarAvaliacoesRecebidas
                 .build();
 
         dtoPadrao = AvaliacaoRequestDTO.builder()
@@ -140,5 +144,48 @@ class AvaliacaoServiceTest {
         assertThatThrownBy(() -> avaliacaoService.criarAvaliacao(1L, dtoPadrao))
                 .isInstanceOf(RegraNegocioException.class)
                 .hasMessageContaining("já avaliou");
+    }
+
+    // ── listarAvaliacoesRecebidas ─────────────────────────────────────────────
+
+    @Test
+    @DisplayName("listarAvaliacoesRecebidas deve retornar avaliações recebidas pelo maker")
+    void listarAvaliacoesRecebidas_retornaAvaliacoes() {
+        AvaliacaoMaker avaliacao = AvaliacaoMaker.builder()
+                .id(1L).nota(5).comentario("Excelente!")
+                .dataAvaliacao(new Date())
+                .cliente(clientePadrao).maker(makerPadrao)
+                .build();
+
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(makerPadrao));
+        when(avaliacaoRepository.findByMaker_Id(2L)).thenReturn(List.of(avaliacao));
+
+        List<AvaliacaoDTO> resultado = avaliacaoService.listarAvaliacoesRecebidas(2L);
+
+        assertThat(resultado).hasSize(1);
+        assertThat(resultado.get(0).getId()).isEqualTo(1L);
+        assertThat(resultado.get(0).getNota()).isEqualTo(5);
+        assertThat(resultado.get(0).getComentario()).isEqualTo("Excelente!");
+        assertThat(resultado.get(0).getClienteNome()).isEqualTo("Ana Cliente");
+        assertThat(resultado.get(0).getDataAvaliacao()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("listarAvaliacoesRecebidas sem avaliações deve retornar lista vazia")
+    void listarAvaliacoesRecebidas_semAvaliacoes_retornaListaVazia() {
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(makerPadrao));
+        when(avaliacaoRepository.findByMaker_Id(2L)).thenReturn(List.of());
+
+        assertThat(avaliacaoService.listarAvaliacoesRecebidas(2L)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("listarAvaliacoesRecebidas com maker inexistente deve lançar RegraNegocioException")
+    void listarAvaliacoesRecebidas_makerNaoEncontrado_lancaExcecao() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> avaliacaoService.listarAvaliacoesRecebidas(99L))
+                .isInstanceOf(RegraNegocioException.class)
+                .hasMessageContaining("Maker não encontrado");
     }
 }

@@ -56,7 +56,7 @@ export const makerService = {
 
   // Avaliações
   async listarAvaliacoes(makerId) {
-    const { data } = await apiClient.get('/maker/avaliacoes', { headers: headers(makerId) });
+    const { data } = await apiClient.get('/avaliacoes/maker', { headers: headers(makerId) });
     return data;
   },
 
