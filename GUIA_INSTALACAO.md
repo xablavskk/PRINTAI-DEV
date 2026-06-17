@@ -22,7 +22,9 @@ Instale antes de começar:
 
 ## 2. Baixando o projeto
 
-Baixe o arquivo `.zip` do projeto (disponível na seção **Releases** do repositório no GitHub) e extraia em uma pasta de sua preferência.
+[⬇️ Baixar PrintAI (.zip)](https://github.com/xablavskk/PRINTAI-DEV/archive/refs/heads/main.zip)
+
+Extraia o arquivo em uma pasta de sua preferência.
 
 ---
 
