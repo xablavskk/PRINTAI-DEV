@@ -1,6 +1,7 @@
 package com.printai.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.printai.dto.AvaliacaoDTO;
 import com.printai.dto.AvaliacaoRequestDTO;
 import com.printai.dto.AvaliacaoRespostaDTO;
 import com.printai.exception.RegraNegocioException;
@@ -14,9 +15,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -153,5 +156,45 @@ class AvaliacaoControllerTest {
                         .content(objectMapper.writeValueAsString(dtoPadrao())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.erro").value("Você só pode avaliar um Maker após finalizar um pedido com ele"));
+    }
+
+    // ── GET /api/avaliacoes/maker ────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Listar avaliações com header válido deve retornar 200 com lista")
+    void listarAvaliacoesRecebidas_headerValido_retorna200() throws Exception {
+        AvaliacaoDTO avaliacao = AvaliacaoDTO.builder()
+                .id(1L).clienteNome("Ana Cliente").nota(5)
+                .comentario("Excelente serviço!").dataAvaliacao(new Date())
+                .build();
+        when(avaliacaoService.listarAvaliacoesRecebidas(1L)).thenReturn(List.of(avaliacao));
+
+        mockMvc.perform(get("/api/avaliacoes/maker")
+                        .header("X-Maker-Id", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nota").value(5))
+                .andExpect(jsonPath("$[0].clienteNome").value("Ana Cliente"))
+                .andExpect(jsonPath("$[0].comentario").value("Excelente serviço!"));
+    }
+
+    @Test
+    @DisplayName("Listar avaliações sem header X-Maker-Id deve retornar 400")
+    void listarAvaliacoesRecebidas_semHeader_retorna400() throws Exception {
+        mockMvc.perform(get("/api/avaliacoes/maker"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Listar avaliações com maker inexistente deve retornar 400")
+    void listarAvaliacoesRecebidas_makerNaoEncontrado_retorna400() throws Exception {
+        when(avaliacaoService.listarAvaliacoesRecebidas(99L))
+                .thenThrow(new RegraNegocioException("Maker não encontrado"));
+
+        mockMvc.perform(get("/api/avaliacoes/maker")
+                        .header("X-Maker-Id", "99"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").value("Maker não encontrado"));
     }
 }

@@ -1,5 +1,6 @@
 package com.printai.controller;
 
+import com.printai.dto.AvaliacaoDTO;
 import com.printai.dto.AvaliacaoRequestDTO;
 import com.printai.dto.AvaliacaoRespostaDTO;
 import com.printai.service.AvaliacaoService;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/avaliacoes")
@@ -22,5 +25,11 @@ public class AvaliacaoController {
             @Valid @RequestBody AvaliacaoRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(avaliacaoService.criarAvaliacao(clienteId, dto));
+    }
+
+    @GetMapping("/maker")
+    public ResponseEntity<List<AvaliacaoDTO>> listarAvaliacoesRecebidas(
+            @RequestHeader("X-Maker-Id") Long makerId) {
+        return ResponseEntity.ok(avaliacaoService.listarAvaliacoesRecebidas(makerId));
     }
 }
