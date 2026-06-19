@@ -14,21 +14,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/busca")
 @RequiredArgsConstructor
-public class BuscaController {
+public class BuscarImpressoras3DController {
 
     private final ServicoImpressaoService servicoImpressaoService;
     private final Impressora3DService impressora3DService;
 
     @GetMapping("/servicos")
-    public ResponseEntity<List<ServicoRespostaDTO>> buscarServicos(BuscaServicoRequestDTO buscaDTO) {
-        List<ServicoRespostaDTO> resultados = servicoImpressaoService.buscarServicos(buscaDTO);
+    public ResponseEntity<List<ServicoRespostaDTO>> buscarServicos(
+            BuscaServicoRequestDTO buscaDTO,
+            @RequestParam(required = false) Double lat,
+            @RequestParam(required = false) Double lon) {
+        List<ServicoRespostaDTO> resultados = servicoImpressaoService.buscarServicos(buscaDTO, lat, lon);
         return ResponseEntity.ok(resultados);
-    }
-
-    @GetMapping("/detalhe/{id}")
-    public ResponseEntity<ServicoRespostaDTO> buscarDetalhes(@PathVariable Long id) {
-        ServicoRespostaDTO detalhes = servicoImpressaoService.buscarPorId(id);
-        return ResponseEntity.ok(detalhes);
     }
 
     @GetMapping("/impressoras")

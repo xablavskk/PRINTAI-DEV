@@ -2,7 +2,7 @@ import React from 'react';
 import CardServico from './CardServico';
 import './ServiceList.css';
 
-const ListaServicos = ({ resultados, carregando }) => {
+const ListaServicos = ({ resultados, carregando, cliente, setLoginAberto }) => {
   if (carregando) {
     return (
       <div className="loading-state">
@@ -25,10 +25,11 @@ const ListaServicos = ({ resultados, carregando }) => {
   return (
     <div className="service-grid">
       {resultados.map(resultado => (
-        <CardServico key={resultado.id} resultado={resultado} />
+        <CardServico key={resultado.id} resultado={resultado} cliente={cliente} setLoginAberto={setLoginAberto} />
       ))}
     </div>
   );
 };
+
 
 export default ListaServicos;

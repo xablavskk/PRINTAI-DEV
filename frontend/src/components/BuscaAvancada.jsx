@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings2 } from 'lucide-react';
+import { buscaService } from '../services/buscaService';
 import './SearchForms.css';
 
 const BuscaAvancada = ({ onSearch }) => {
@@ -7,8 +8,18 @@ const BuscaAvancada = ({ onSearch }) => {
     tecnologia: '',
     material: '',
     modelo: '',
-    volumeMaximo: ''
+    volumeMaximo: '',
   });
+
+  const [tipos, setTipos] = useState([]);
+  const [materiais, setMateriais] = useState([]);
+
+  useEffect(() => {
+    buscaService.listarTipos().then(setTipos).catch(() => setTipos([]));
+    buscaService.listarMateriais().then(setMateriais).catch(() => setMateriais([]));
+  }, []);
+
+  const tecnologiasDisponiveis = tipos.flatMap(t => t.tecnologias || []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,25 +34,29 @@ const BuscaAvancada = ({ onSearch }) => {
     } else {
       delete params.volumeMaximo;
     }
+    Object.keys(params).forEach(k => params[k] === '' && delete params[k]);
     onSearch(params);
+  };
+
+  const handleLimpar = () => {
+    setFiltros({ tecnologia: '', material: '', modelo: '', volumeMaximo: '' });
+    onSearch({});
   };
 
   return (
     <div className="search-form-container animate-fade-in">
       <h2 className="form-title">Filtros Técnicos</h2>
       <p className="form-subtitle">Selecione as especificações exatas para sua impressão.</p>
-      
+
       <form onSubmit={handleSearch} className="advanced-form">
+
         <div className="form-group">
           <label>Tecnologia</label>
           <select name="tecnologia" value={filtros.tecnologia} onChange={handleChange} className="search-select">
             <option value="">Qualquer Tecnologia</option>
-            <option value="FDM">FDM (Filamento)</option>
-            <option value="SLA">SLA (Resina)</option>
-            <option value="SLS">SLS (Pó)</option>
-            <option value="DLP">DLP (Resina Digital)</option>
-            <option value="MJF">MJF (Multi Jet Fusion)</option>
-            <option value="BINDER_JETTING">Binder Jetting</option>
+            {tecnologiasDisponiveis.map(tec => (
+              <option key={tec} value={tec}>{tec}</option>
+            ))}
           </select>
         </div>
 
@@ -49,21 +64,22 @@ const BuscaAvancada = ({ onSearch }) => {
           <label>Material</label>
           <select name="material" value={filtros.material} onChange={handleChange} className="search-select">
             <option value="">Qualquer Material</option>
-            <option value="PLA">PLA</option>
-            <option value="ABS">ABS</option>
-            <option value="PETG">PETG</option>
-            <option value="Resina">Resina</option>
+            {materiais.map(m => (
+              <option key={m.nome} value={m.nome} title={m.descricao}>
+                {m.nome}
+              </option>
+            ))}
           </select>
         </div>
 
         <div className="form-group">
           <label>Modelo da Impressora</label>
-          <input 
-            type="text" 
-            name="modelo" 
-            value={filtros.modelo} 
-            onChange={handleChange} 
-            placeholder="Ex: Ender 3..." 
+          <input
+            type="text"
+            name="modelo"
+            value={filtros.modelo}
+            onChange={handleChange}
+            placeholder="Ex: Ender 3..."
             className="search-input"
             style={{ marginTop: '0.5rem' }}
           />
@@ -71,22 +87,27 @@ const BuscaAvancada = ({ onSearch }) => {
 
         <div className="form-group">
           <label>Volume Máximo (cm³)</label>
-          <input 
-            type="number" 
-            name="volumeMaximo" 
-            value={filtros.volumeMaximo} 
-            onChange={handleChange} 
-            placeholder="Ex: 20" 
+          <input
+            type="number"
+            name="volumeMaximo"
+            value={filtros.volumeMaximo}
+            onChange={handleChange}
+            placeholder="Ex: 20"
             min="1"
             className="search-input"
             style={{ marginTop: '0.5rem' }}
           />
         </div>
 
-        <button type="submit" className="btn btn-primary flex-center gap-2 mt-4">
-          <Settings2 size={18} />
-          Aplicar Filtros
-        </button>
+        <div className="advanced-form-actions">
+          <button type="button" className="btn btn-outline" onClick={handleLimpar}>
+            Limpar
+          </button>
+          <button type="submit" className="btn btn-primary flex-center gap-2">
+            <Settings2 size={18} />
+            Aplicar Filtros
+          </button>
+        </div>
       </form>
     </div>
   );

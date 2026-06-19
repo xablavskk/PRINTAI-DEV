@@ -10,8 +10,8 @@ export const useBusca = () => {
     setLoading(true);
     setError(null);
     try {
-      const temFiltroImpressora = params.tecnologia || params.material || params.modelo || params.volumeMaximo;
-      const data = temFiltroImpressora
+      const temFiltroExclusivoImpressora = params.modelo || params.volumeMaximo;
+      const data = temFiltroExclusivoImpressora
         ? await buscaService.listarImpressoras(params)
         : await buscaService.listarServicos(params);
       setResultados(data);
@@ -33,7 +33,7 @@ export const useDetalhesServico = (id) => {
 
   const carregar = useCallback(async () => {
     if (!id || id === undefined) return;
-    
+
     setLoading(true);
     try {
       const data = await buscaService.obterDetalhes(id);

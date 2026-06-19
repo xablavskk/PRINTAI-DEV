@@ -12,29 +12,28 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(BuscaController.class)
-class BuscaControllerTest {
+@WebMvcTest(BuscarImpressoras3DController.class)
+class BuscarImpressoras3DControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private ServicoImpressaoService servicoImpressaoService;
 
-    @MockBean
+    @MockitoBean
     private Impressora3DService impressora3DService;
 
     // ===================== /busca/servicos =====================
@@ -50,7 +49,7 @@ class BuscaControllerTest {
                 .precoBase(50.0)
                 .build();
 
-        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class)))
+        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class), any(), any()))
                 .thenReturn(List.of(servico));
 
         mockMvc.perform(get("/api/busca/servicos"))
@@ -63,60 +62,13 @@ class BuscaControllerTest {
     @Test
     @DisplayName("Buscar servicos sem resultados deve retornar lista vazia")
     void buscarServicos_semResultados_retornaListaVazia() throws Exception {
-        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class)))
+        when(servicoImpressaoService.buscarServicos(any(BuscaServicoRequestDTO.class), any(), any()))
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/busca/servicos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isEmpty());
-    }
-
-    // ===================== /busca/detalhe/{id} =====================
-
-    @Test
-    @DisplayName("Buscar detalhe por ID existente deve retornar servico")
-    void buscarDetalhe_idExistente_retornaServico() throws Exception {
-        UsuarioRespostaDTO maker = UsuarioRespostaDTO.builder()
-                .id(1L)
-                .nome("Adriano Maker")
-                .perfil(Perfil.MAKER)
-                .cidade("São Paulo")
-                .estado("SP")
-                .build();
-
-        ServicoRespostaDTO servico = ServicoRespostaDTO.builder()
-                .id(1L)
-                .nome("Impressão FDM de Alta Precisão")
-                .descricao("Serviço ideal para protótipos.")
-                .material("PLA")
-                .precoBase(50.0)
-                .maker(maker)
-                .mediaAvaliacao(4.5)
-                .totalAvaliacoes(2)
-                .build();
-
-        when(servicoImpressaoService.buscarPorId(1L)).thenReturn(servico);
-
-        mockMvc.perform(get("/api/busca/detalhe/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.nome").value("Impressão FDM de Alta Precisão"))
-                .andExpect(jsonPath("$.maker.nome").value("Adriano Maker"))
-                .andExpect(jsonPath("$.maker.cidade").value("São Paulo"))
-                .andExpect(jsonPath("$.mediaAvaliacao").value(4.5));
-    }
-
-    @Test
-    @DisplayName("Buscar detalhe com ID inexistente deve lancar excecao de servico nao encontrado")
-    void buscarDetalhe_idInexistente_retornaErro() throws Exception {
-        when(servicoImpressaoService.buscarPorId(99L))
-                .thenThrow(new RuntimeException("Serviço não encontrado"));
-
-        mockMvc.perform(get("/api/busca/detalhe/99"))
-                .andExpect(result -> assertNotNull(result.getResolvedException()))
-                .andExpect(result -> assertInstanceOf(RuntimeException.class,
-                        result.getResolvedException().getCause()));
     }
 
     // ===================== /busca/impressoras =====================
@@ -139,7 +91,7 @@ class BuscaControllerTest {
                 .maker(maker)
                 .build();
 
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(List.of(impressora));
 
         mockMvc.perform(get("/api/busca/impressoras"))
@@ -160,7 +112,7 @@ class BuscaControllerTest {
                 .disponibilidade(true)
                 .build();
 
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(List.of(impressoraFDM));
 
         mockMvc.perform(get("/api/busca/impressoras").param("tecnologia", "FDM"))
@@ -171,7 +123,7 @@ class BuscaControllerTest {
     @Test
     @DisplayName("Filtrar impressoras por tecnologia inexistente deve retornar lista vazia")
     void buscarImpressoras_filtroTecnologiaInexistente_retornaVazio() throws Exception {
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/busca/impressoras").param("tecnologia", "SLA"))
@@ -189,7 +141,7 @@ class BuscaControllerTest {
                 .disponibilidade(true)
                 .build();
 
-        when(impressora3DService.buscarImpressoras(any(), isNull(), isNull(), anyDouble()))
+        when(impressora3DService.buscarImpressoras(any(), nullable(Double.class), nullable(Double.class), nullable(Double.class)))
                 .thenReturn(List.of(impressoraSemMaterial));
 
         mockMvc.perform(get("/api/busca/impressoras"))

@@ -20,6 +20,7 @@ public class ServicoRespostaDTO {
     private double precoBase;
     private String condicoesServico;
     private String volumeImpressao;
+    private Double distanciaKm;
     private UsuarioRespostaDTO maker;
     private List<AvaliacaoDTO> avaliacoes;
     private Double mediaAvaliacao;

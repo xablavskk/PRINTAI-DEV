@@ -1,0 +1,336 @@
+.cadastro-container {
+  max-width: 760px;
+  margin: 2rem auto;
+  padding: 0 1rem 4rem;
+}
+
+.cadastro-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cadastro-header h1 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.cadastro-header p {
+  color: var(--text-secondary, #aaa);
+  margin: 0;
+}
+
+/* Alerta de erro geral */
+.alerta-erro {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+/* Formulário */
+.cadastro-form {
+  padding: 2rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-color, #a78bfa);
+  margin: 0 0 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-hint {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #aaa);
+  margin: 0 0 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-group--wide {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary, #ccc);
+}
+
+.form-group input,
+.form-group select {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  color: #fff;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--accent-color, #a78bfa);
+}
+
+.form-group select option {
+  background: #1e1e2e;
+  color: #fff;
+}
+
+.input-erro {
+  border-color: rgba(239, 68, 68, 0.6) !important;
+}
+
+.erro-msg {
+  font-size: 0.75rem;
+  color: #f87171;
+}
+
+/* Ações */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.form-actions .btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.form-actions .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tela de sucesso */
+.sucesso-card {
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sucesso-card h2 {
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.sucesso-card p {
+  color: var(--text-secondary, #aaa);
+  margin: 0;
+}
+
+.sucesso-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  text-align: left;
+  width: 100%;
+  max-width: 400px;
+  font-size: 0.9rem;
+}
+
+.coordenadas {
+  color: var(--accent-color, #a78bfa);
+  font-size: 0.82rem;
+}
+
+/* Animação do loader */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group--wide {
+    grid-column: 1;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── Seção de serviços ── */
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.section-header-row h3 {
+  margin: 0 0 0.2rem;
+}
+
+.section-header-row .section-hint {
+  margin: 0;
+}
+
+.btn-add-servico {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent-color, #a78bfa);
+  background: transparent;
+  color: var(--accent-color, #a78bfa);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.btn-add-servico:hover {
+  background: rgba(167, 139, 250, 0.1);
+}
+
+.servicos-vazio {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #aaa);
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.servico-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.servico-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-color, #a78bfa);
+}
+
+.btn-remover {
+  background: transparent;
+  border: none;
+  color: #f87171;
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.btn-remover:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.form-group textarea {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  color: #fff;
+  font-size: 0.9rem;
+  resize: vertical;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-group textarea:focus {
+  border-color: var(--accent-color, #a78bfa);
+}
+
+.checkboxes-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+  color: var(--text-secondary, #ccc);
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-color, #a78bfa);
+  cursor: pointer;
+}

@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Phone, MessageCircle, MapPin, Printer, ShieldCheck, Star, MessageSquare } from 'lucide-react';
 import { useDetalhesServico } from '../hooks/useBusca';
+import { formatarTelefone } from '../utils/mascaras';
 import './ModalDetalhes.css';
 
 const ModalDetalhes = ({ aberto, fechar, dados }) => {
@@ -10,7 +11,6 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
   useEffect(() => {
     if (aberto) {
       carregar();
-      // Impedir scroll do body quando o modal estiver aberto
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -45,7 +45,7 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
                 <span className="badge-verified"><ShieldCheck size={14} /> Maker Verificado</span>
                 {info.totalAvaliacoes > 0 ? (
                   <span className="badge-rating">
-                    <Star size={14} fill="currentColor" /> 
+                    <Star size={14} fill="currentColor" />
                     {info.mediaAvaliacao?.toFixed(1)} ({info.totalAvaliacoes} avaliações)
                   </span>
                 ) : (
@@ -67,10 +67,14 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
                 <h3><MapPin size={18} /> Localização e Contato</h3>
                 <p className="description-text">
                   <strong>{info.maker?.nome}</strong> está em {info.maker?.cidade || 'São Paulo'}, {info.maker?.estado || 'SP'}.
-                  <br />
-                  <span style={{ fontSize: '0.9rem', color: 'var(--accent-color)' }}>
-                    Aproximadamente {info.distancia?.toFixed(1) || '2.5'}km de você.
-                  </span>
+                  {info.distanciaKm != null && (
+                    <>
+                      <br />
+                      <span style={{ fontSize: '0.9rem', color: 'var(--accent-color)' }}>
+                        Aproximadamente {info.distanciaKm.toFixed(1)}km de você.
+                      </span>
+                    </>
+                  )}
                 </p>
               </section>
 
@@ -90,14 +94,19 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
                     <span>Tecnologia:</span>
                     <strong>
                       {info.tecnologias?.length > 0
-                        ? info.tecnologias.join(', ')
+                        ? [...new Set(info.tecnologias)].join(', ')
                         : info.tecnologia || 'Não informado'}
-                      {info.tipoDescricao ? ` — ${info.tipoDescricao}` : ''}
                     </strong>
                   </div>
+                  {info.tipoNome && (
+                    <div className="tech-item">
+                      <span>Tipo de Impressão:</span>
+                      <strong title={info.tipoDescricao || ''}>{info.tipoNome}</strong>
+                    </div>
+                  )}
                   <div className="tech-item">
                     <span>Materiais Suportados:</span>
-                    <strong>{info.material}</strong>
+                    <strong>{info.material || 'Não informado'}</strong>
                   </div>
                   <div className="tech-item">
                     <span>Área Máxima (Volume):</span>
@@ -130,7 +139,9 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
                           <strong>{aval.clienteNome}</strong>
                           <div className="evaluation-stars">
                             {[...Array(5)].map((_, i) => (
-                              <Star key={i} size={12} fill={i < aval.nota ? "var(--accent-color)" : "none"} color={i < aval.nota ? "var(--accent-color)" : "var(--text-secondary)"} />
+                              <Star key={i} size={12}
+                                fill={i < aval.nota ? 'var(--accent-color)' : 'none'}
+                                color={i < aval.nota ? 'var(--accent-color)' : 'var(--text-secondary)'} />
                             ))}
                           </div>
                         </div>
@@ -148,7 +159,7 @@ const ModalDetalhes = ({ aberto, fechar, dados }) => {
                 </button>
                 <button className="btn btn-outline" onClick={() => window.location.href = `tel:${info.maker?.telefone}`}>
                   <Phone size={20} />
-                  Ligar: {info.maker?.telefone || 'Não informado'}
+                  Ligar: {formatarTelefone(info.maker?.telefone)}
                 </button>
               </div>
             </>

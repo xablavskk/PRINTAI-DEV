@@ -34,6 +34,12 @@ Aplicação disponível em `http://localhost:5173`
 
 ---
 
+## Rodando em outra máquina
+
+Veja o [GUIA_INSTALACAO.md](GUIA_INSTALACAO.md) para o passo a passo completo de como rodar o projeto em outra máquina usando os scripts `start.sh` / `start.bat`.
+
+---
+
 ## Testes unitários
 
 ```bash
@@ -99,3 +105,17 @@ Se você ou outra pessoa subiu código no `PRINTAI-DEV` e você quer trazer para
 | :--- | :--- |
 | **Pasta do código sumiu ou está vazia** | `git submodule update --init --recursive` |
 | **Saber em qual commit o submódulo está** | `git submodule status` |
+
+
+
+## Evidências de Testes
+
+Para evidenciar os testes unitarios do sistema, acessamos a api 
+
+cd api/
+
+e rodamos o seguinte comando para reportar as evidências 
+
+```powershell
+mvn surefire-report:report
+```

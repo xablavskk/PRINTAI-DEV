@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface AvaliacaoRepository extends JpaRepository<AvaliacaoMaker, Long> {
     List<AvaliacaoMaker> findByMaker_Id(Long makerId);
+    boolean existsByCliente_IdAndMaker_Id(Long clienteId, Long makerId);
 }
